@@ -7,13 +7,18 @@ import { render } from "@testing-library/react";
 import axe from "axe-core";
 import { expect, vi } from "vitest";
 import App from "../src/App";
-import { searchReducer } from "../src/store";
+import { createAppStore, searchReducer } from "../src/store";
 
-export function renderApp() {
+// initialSearch позволяет смоделировать запуск с подбором, прочитанным из адреса
+// (так же, как это делает singleton-store в src/store.js при загрузке приложения).
+export function renderApp(initialSearch) {
   // Заголовок и язык ставит index.html; в JSDOM задаём их сами.
   document.documentElement.lang = "ru";
   document.title = "Подбор автозапчастей";
-  const store = configureStore({ reducer: { search: searchReducer } });
+  // С подбором из адреса используем тот же путь создания store, что и приложение.
+  const store = initialSearch
+    ? createAppStore(initialSearch)
+    : configureStore({ reducer: { search: searchReducer } });
   return render(
     <Provider store={store}>
       <App />

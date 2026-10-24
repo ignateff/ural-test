@@ -1,8 +1,10 @@
 import Header from "./components/Header";
 import SearchPanel from "./components/SearchPanel";
 import OffersPanel from "./components/OffersPanel";
+import useSearchUrlSync from "./useSearchUrlSync";
 
 export default function App() {
+  useSearchUrlSync();
   return (
     <>
       <Header />

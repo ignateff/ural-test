@@ -4,6 +4,7 @@ import {
   createSlice,
 } from "@reduxjs/toolkit";
 import { getBrands, getOffers, searchParts } from "./api";
+import { readSearchFromUrl } from "./urlState";
 
 export const loadBrands = createAsyncThunk(
   "search/brands",
@@ -79,4 +80,19 @@ const slice = createSlice({
 
 export const { numberChanged, brandSelected } = slice.actions;
 export const searchReducer = slice.reducer;
-export const store = configureStore({ reducer: { search: searchReducer } });
+
+// Подбор из адреса становится начальным состоянием: ссылку можно открыть заново.
+// Фабрика нужна тестам, чтобы проверить это с адресом текущего окна; без DOM
+// (Node-проверки) начальный подбор пуст.
+export function createAppStore(
+  searchFromUrl = readSearchFromUrl(globalThis.window?.location),
+) {
+  return configureStore({
+    reducer: { search: searchReducer },
+    preloadedState: {
+      search: { ...initialState, ...searchFromUrl },
+    },
+  });
+}
+
+export const store = createAppStore();

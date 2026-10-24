@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { brandSelected, loadBrands, numberChanged } from "../store";
+import { NUMBER_MAX_LENGTH } from "../urlState";
 import ErrorMessage from "./ErrorMessage";
 import Loader from "./Loader";
 import StatusAnnouncer from "./StatusAnnouncer";
@@ -73,7 +74,7 @@ export default function SearchPanel() {
           name="part-number"
           className="form-control"
           placeholder="Например, 01089"
-          maxLength={100}
+          maxLength={NUMBER_MAX_LENGTH}
           autoComplete="off"
           spellCheck="false"
           aria-describedby="search-help"
@@ -100,6 +101,11 @@ export default function SearchPanel() {
           disabled={brandsStatus !== "success" || !brands.length}
           onChange={(event) => dispatch(brandSelected(event.target.value))}>
           <option value="" disabled>{brandsStatus === "loading" ? "Ищем производителей…" : brandsStatus === "error" ? "Ошибка поиска" : brandsStatus === "success" && !brands.length ? "Производители не найдены" : "Выберите производителя"}</option>
+          {/* Производитель из ссылки сохраняется, даже если поставщик его сейчас
+              не вернул: иначе отправленная ссылка теряла бы выбранную деталь. */}
+          {brand && !brands.includes(brand) && (
+            <option value={brand}>{brand}</option>
+          )}
           {brands.map((name) => <option key={name} value={name}>{name}</option>)}
         </select>
         {brand && <p id="selected-brand" className="form-text selected-brand">Выбран производитель: {brand}</p>}
