@@ -1,0 +1,337 @@
+.table th {
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #e3e8dd;
+  position: sticky;
+  top: var(--search-height, 0px);
+  z-index: 2;
+  padding: 7px 8px;
+  line-height: 1.3;
+  color: #46594a;
+  background: #f7f9f4;
+  box-shadow: inset 0 -1px 0 #dfe5dc;
+}
+.table td {
+  border-color: #ecf0e8;
+  font-size: 13px;
+  padding: 5px 8px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+  vertical-align: middle;
+}
+.table td:first-child {
+  width: 50%;
+  padding: 5px 8px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+  vertical-align: middle;
+}
+.part-number {
+  font-family: monospace;
+  font-size: 12px;
+  color: #506354;
+}
+.kind {
+  background: #f5f2e9;
+  border-radius: 4px;
+  font-size: 11px;
+  line-height: 1.45;
+  padding: 1px 6px;
+  white-space: nowrap;
+  color: #625431;
+}
+.kind.original {
+  background: #edf3e8;
+  color: #33563e;
+}
+.price {
+  font-weight: 700;
+  white-space: normal;
+}
+.stock {
+  color: #417253;
+  white-space: normal;
+}
+.table {
+  table-layout: fixed;
+  width: 100%;
+}
+.table th:first-child {
+  width: 46%;
+}
+.table th:nth-child(2) {
+  width: 20%;
+}
+.table th:nth-child(3),
+.table th:nth-child(4) {
+  width: 17%;
+}
+.offers-table {
+  overflow: visible;
+  overflow-anchor: none;
+}
+.part-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 1px 8px;
+}
+.part-name {
+  margin: 1px 0 0;
+  line-height: 1.35;
+  color: #506354;
+}
+.warehouse {
+  color: #506354;
+}
+.sort-heading {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+.table th[aria-sort="ascending"] .sort-heading::after {
+  content: " ↑";
+}
+.table th[aria-sort="descending"] .sort-heading::after {
+  content: " ↓";
+}
+.sort-heading:focus-visible {
+  outline: 2px solid #28633c;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.table tr.offers-spacer,
+.table tr.offers-spacer td {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  line-height: 0;
+  font-size: 0;
+  min-width: 0;
+}
+.offers-heading-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.offers-results-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.offers-heading-toolbar .section-heading {
+  flex: 1 1 240px;
+  min-width: 0;
+  margin: 0;
+}
+.offers-heading-toolbar h2 {
+  overflow-wrap: anywhere;
+}
+.offers-results-selection {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  min-width: 0;
+}
+.offers-results-selection .selection {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.offers-results-selection .result-count {
+  margin-left: 0;
+}
+.offers-results-toolbar .offer-sort {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 0 auto;
+  min-width: 0;
+  font-size: 12px;
+}
+.offers-results-toolbar .offer-sort select {
+  min-width: 0;
+  max-width: 230px;
+  padding: 6px;
+  border: 1px solid #71836f;
+  border-radius: 5px;
+  background: white;
+}
+.offers-results-toolbar .offer-sort label {
+  color: #4f6353;
+}
+.results-panel {
+  background: #fff;
+  border: 1px solid #dfe5dc;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  padding: 16px;
+}
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.section-heading h2 {
+  font-size: 19px;
+  letter-spacing: -0.4px;
+  margin: 0;
+  font-weight: 650;
+}
+.step {
+  font-size: 11px;
+  font-weight: 700;
+  color: #174f43;
+  background: #eaf0e8;
+  border-radius: 7px;
+  padding: 8px;
+}
+.step.muted {
+  /* 4.91:1 на #f0f2ee: вторичный текст, но читаемый. */
+  background: #f0f2ee;
+  color: #616b64;
+}
+.result-count {
+  background: #edf1e9;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-left: 6px;
+  font-size: 11px;
+  color: #59715f;
+}
+.empty-results {
+  text-align: center;
+  padding: 30px 10px 38px;
+  color: #506354;
+}
+.empty-symbol {
+  display: grid;
+  place-items: center;
+  margin: 0 auto 15px;
+  border: 1px solid #e2e7de;
+  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  font-size: 25px;
+}
+.empty-results h3 {
+  font-size: 15px;
+  color: #506354;
+}
+.empty-results p {
+  font-size: 13px;
+  margin-bottom: 0;
+}
+.selection {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.selection span {
+  /* 4.83:1 на белом: разделитель остаётся вторичным, но не бледным. */
+  margin: 0 10px;
+  color: #6b746d;
+}
+@media (max-width: 575px) {
+  .table,
+  .table tbody {
+    display: block;
+  }
+  .table thead,
+  .offers-results-toolbar .offer-sort label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .table tr {
+    display: block;
+    border: 1px solid #cbd5c8;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 8px 10px;
+  }
+  .table td {
+    display: block;
+    width: auto;
+    border: 0;
+    padding: 4px;
+  }
+  .table td:first-child {
+    display: block;
+    width: auto;
+    border: 0;
+    padding: 4px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e4e9df;
+    margin-bottom: 2px;
+  }
+  .table td[data-label] {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    column-gap: 8px;
+    align-items: baseline;
+    padding: 3px 4px;
+    text-align: right;
+  }
+  .table td[data-label]::before {
+    /* Пустой альтернативный текст: подпись остаётся видимой, но скринридер
+       читает только заголовок колонки, а не её повтор дважды. Первая строка —
+       запасной вариант для браузеров без синтаксиса alt: там подпись просто
+       останется видимым текстом, как и раньше. */
+    content: attr(data-label);
+    content: attr(data-label) / "";
+    white-space: nowrap;
+    overflow-wrap: normal;
+    font-weight: 400;
+    color: #506354;
+    text-align: left;
+  }
+  .table td.price {
+    font-variant-numeric: tabular-nums;
+  }
+  .sort-heading {
+    visibility: hidden;
+  }
+  .table tr.offers-spacer td {
+    display: block;
+    width: 100%;
+  }
+  .offers-results-toolbar .offer-sort {
+    flex: 1 1 230px;
+  }
+  .offers-results-toolbar .offer-sort select {
+    width: 100%;
+    max-width: none;
+  }
+  .section-heading h2 {
+    font-size: 17px;
+  }
+  .results-panel {
+    padding: 10px;
+  }
+}
+@media (max-width: 259px) {
+  .table td[data-label] {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 1px;
+  }
+}

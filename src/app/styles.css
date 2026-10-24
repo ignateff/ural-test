@@ -1,0 +1,130 @@
+:root {
+  /* Индикатор клавиатурного фокуса: приглушённый зелёный, 5.15:1 на белом и
+     не ниже 3:1 на фонах панели (порог WCAG для нетекстового контраста). */
+  --focus-ring: #5b7364;
+  font-family: Arial, sans-serif;
+  color: #20332e;
+  background: #f6f7f4;
+  --search-height: 0px;
+}
+body {
+  margin: 0;
+  background: #f6f7f4;
+  color: #20332e;
+  font-family: Arial, sans-serif;
+}
+.page-width {
+  max-width: 1100px;
+}
+.topbar {
+  background: #fff;
+  border-bottom: 1px solid #e1e6de;
+  padding: 12px 0;
+}
+.wordmark {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #20332e;
+  font-size: 23px;
+  font-weight: 750;
+  letter-spacing: -1px;
+}
+.brand-icon {
+  display: grid;
+  place-items: center;
+  background: #174f43;
+  color: #fff;
+  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  margin-right: 10px;
+  font-size: 28px;
+}
+.brand-dot {
+  color: #bb7238;
+}
+.supplier-label {
+  font-size: 12px;
+  color: #506354;
+}
+footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  padding: 6px 0 32px;
+  color: #506354;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  color: var(--bs-btn-color);
+  background-color: var(--bs-btn-bg);
+  border-color: var(--bs-btn-border-color);
+  box-shadow: none;
+}
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  transform: translateY(-200%);
+  padding: 12px 16px;
+  border-radius: 6px;
+  background: #174f43;
+  color: #fff;
+  z-index: 20;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+html {
+  scrollbar-gutter: stable;
+}
+.state {
+  padding: 24px 0;
+  font-size: 14px;
+  color: #506354;
+}
+.alert {
+  font-size: 14px;
+}
+.page-title {
+  font-size: 24px;
+  letter-spacing: -0.5px;
+  margin: 18px 0 12px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+@media (max-width: 575px) {
+  .wordmark {
+    font-size: 20px;
+  }
+  .supplier-label {
+    font-size: 10px;
+  }
+  footer {
+    display: block;
+    line-height: 1.8;
+  }
+  footer span {
+    display: block;
+  }
+  .page-title {
+    font-size: 21px;
+    margin: 12px 0;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spinner-border {
+    animation: none;
+  }
+}

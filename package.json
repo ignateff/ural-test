@@ -9,7 +9,7 @@
     "start": "vite preview",
     "test": "vitest run",
     "preview": "vite preview",
-    "test:a11y": "vitest run test/accessibility.test.jsx",
+    "test:a11y": "vitest run test/app/accessibility.test.jsx",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test:browser": "playwright test",
