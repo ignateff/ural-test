@@ -479,7 +479,7 @@ describe("Плотная таблица складских предложени�
     expect(rows[1].slice(1)).toEqual(["РЕЗ", "120,50 ₽", "4 шт."]);
   });
 
-  it("показывает все складские строки результата без пагинации и группировки", async () => {
+  it("виртуализирует длинный подбор без пагинации и группировки", async () => {
     const parts = Array.from({ length: 60 }, (_, index) => ({
       goodsID: `part-${index}`,
       brand: "ASAM",
@@ -493,12 +493,14 @@ describe("Плотная таблица складских предложени�
     const user = userEvent.setup();
     const table = await showOffers(user, parts);
     const rows = rowTexts(table);
-    expect(rows).toHaveLength(120);
-    expect(rows.filter((cells) => cells[1] === "ДМД")).toHaveLength(60);
-    expect(rows.filter((cells) => cells[1] === "РЕЗ")).toHaveLength(60);
+    expect(table).toHaveAttribute("aria-rowcount", "121");
+    expect(rows.length).toBeGreaterThan(0);
+    expect(rows.length).toBeLessThan(100);
+    expect(rows.some((cells) => cells[1] === "ДМД")).toBe(true);
+    expect(rows.some((cells) => cells[1] === "РЕЗ")).toBe(true);
     expect(rows[0][0]).toContain("01089-0");
     expect(rows[1][0]).toContain("01089-0");
-    expect(rows.at(-1)[0]).toContain("01089-59");
+    expect(within(table).getAllByRole("row")[1]).toHaveAttribute("aria-rowindex", "2");
     expect(
       screen
         .getAllByRole("status")

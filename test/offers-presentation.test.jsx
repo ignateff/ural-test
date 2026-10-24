@@ -147,7 +147,7 @@ describe("Мобильные карточки складских предлож�
     expect(within(results).queryAllByRole("list")).toHaveLength(0);
     expect(within(results).getAllByRole("row")).toHaveLength(5);
     for (const warehouse of ["ДМД", "МСК", "СПБ", "Нет предложений"]) {
-      expect(within(results).getAllByText(warehouse)).toHaveLength(1);
+      expect(within(within(results).getByRole("table")).getAllByText(warehouse)).toHaveLength(1);
     }
     // Каждая ячейка со значением повторяет подпись своей колонки (data-label),
     // чтобы карточка показывала те же подписи, что и заголовки таблицы.

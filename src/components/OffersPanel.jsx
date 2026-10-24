@@ -1,6 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { filterOffers, activeFilterCount } from "../offerFilters";
+import OffersFilters from "./OffersFilters";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loadOffers } from "../store";
+import { sortOffers } from "../offerSorting";
+import { loadOffers, filtersReset } from "../store";
 import ErrorMessage from "./ErrorMessage";
 import Loader from "./Loader";
 import OffersTable from "./OffersTable";
@@ -8,9 +11,12 @@ import StatusAnnouncer from "./StatusAnnouncer";
 
 export default function OffersPanel() {
   const dispatch = useDispatch();
-  const { number, brand, offers, offersStatus, offersError } = useSelector(
+  const { number, brand, sort, order, filters, offers, offersStatus, offersError } = useSelector(
     (state) => state.search,
   );
+  const filteredOffers = useMemo(() => filterOffers(offers, filters), [offers, filters]);
+  const sortedOffers = useMemo(() => sortOffers(filteredOffers, sort, order), [filteredOffers, sort, order]);
+  const hasFilters = activeFilterCount(filters) > 0;
   const [retryCount, setRetryCount] = useState(0);
   const query = number.trim();
   const resultsRef = useRef(null);
@@ -22,7 +28,7 @@ export default function OffersPanel() {
     if (panel.getBoundingClientRect().top < height) {
       window.scrollTo({ top: window.scrollY + panel.getBoundingClientRect().top - height, behavior: "instant" });
     }
-  }, [number, brand]);
+  }, [number, brand, filters, sort, order]);
 
   useEffect(() => {
     if (!brand || !query) return;
@@ -43,7 +49,7 @@ export default function OffersPanel() {
         </span>
         <h2 id="results-heading">Детали и предложения</h2>
         {offersStatus === "success" && (
-          <span className="result-count">Строк: {offers.length}</span>
+          <span className="result-count">{hasFilters ? `Показано ${filteredOffers.length} из ${offers.length}` : `Строк: ${offers.length}`}</span>
         )}
       </div>
       {!brand && (
@@ -72,13 +78,16 @@ export default function OffersPanel() {
       <StatusAnnouncer>
         {offersStatus === "success"
           ? offers.length
-            ? `Поиск завершён. Строк в таблице: ${offers.length}.`
+            ? hasFilters ? `Показано ${filteredOffers.length} из ${offers.length}.` : `Поиск завершён. Строк в таблице: ${offers.length}.`
             : noResultsMessage
           : ""}
       </StatusAnnouncer>
       {offersStatus === "success" &&
         (offers.length ? (
-          <OffersTable offers={offers} />
+          <>
+            <OffersFilters showReset={filteredOffers.length > 0} />
+            {filteredOffers.length ? <OffersTable offers={sortedOffers} /> : <div className="state"><p>Ничего не найдено по выбранным фильтрам</p><button type="button" className="filter-reset" onClick={() => dispatch(filtersReset())}>Сбросить фильтры</button></div>}
+          </>
         ) : (
           <p className="state">{noResultsMessage}</p>
         ))}

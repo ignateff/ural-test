@@ -1,3 +1,5 @@
+import { normalizeStock, normalizeKind, normalizePrice } from "./offerFilters";
+import { normalizeSort } from "./offerSorting";
 // Адрес страницы как источник и хранилище текущего подбора: артикул и
 // производитель искомой детали переживают перезагрузку и попадают в ссылку.
 // Значения читаются при создании Redux store и записываются при каждом изменении
@@ -30,13 +32,43 @@ export function readSearchFromUrl(location) {
   });
 }
 
-export function buildSearchUrl({ number, brand } = {}, location) {
+export function readSortFromUrl(location) {
+  const params = location ? new URL(location.href).searchParams : new URLSearchParams();
+  return normalizeSort(params.get("sort"), params.get("order"));
+}
+
+export function readFiltersFromUrl(location) {
+  const params = location ? new URL(location.href).searchParams : new URLSearchParams();
+  return { wh: [...new Set(params.getAll("wh"))], brands: [...new Set(params.getAll("brands"))], stock: normalizeStock(params.get("stock")), kind: normalizeKind(params.get("kind")), priceFrom: normalizePrice(params.get("priceFrom")), priceTo: normalizePrice(params.get("priceTo")) };
+}
+
+export function buildSearchUrl({ number, brand, sort, order, filters } = {}, location) {
   const normalized = normalizeSearch({ number, brand });
   const url = new URL(location.href);
   if (normalized.number) url.searchParams.set("number", normalized.number);
   else url.searchParams.delete("number");
   if (normalized.brand) url.searchParams.set("brand", normalized.brand);
   else url.searchParams.delete("brand");
+  const sorting = normalizeSort(sort, order);
+  for (const key of ["sort", "order"]) {
+    if (sorting[key]) url.searchParams.set(key, sorting[key]);
+    else url.searchParams.delete(key);
+  }
+  const stock = normalizeStock(filters?.stock);
+  if (stock) url.searchParams.set("stock", stock);
+  else url.searchParams.delete("stock");
+  const kind = normalizeKind(filters?.kind);
+  if (kind) url.searchParams.set("kind", kind);
+  else url.searchParams.delete("kind");
+  for (const key of ["priceFrom", "priceTo"]) {
+    const price = normalizePrice(filters?.[key]);
+    if (price) url.searchParams.set(key, price);
+    else url.searchParams.delete(key);
+  }
+  for (const key of ["wh", "brands"]) {
+    url.searchParams.delete(key);
+    for (const value of filters?.[key] || []) url.searchParams.append(key, value);
+  }
   return `${url.pathname}${url.search}${url.hash}`;
 }
 

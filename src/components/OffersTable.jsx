@@ -1,30 +1,47 @@
+import useOffersWindow from '../useOffersWindow';
+import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import { sortChanged } from "../store";
+import { sortColumns, sortAnnouncement } from "../offerSorting";
+import StatusAnnouncer from "./StatusAnnouncer";
 const rubles = new Intl.NumberFormat("ru-RU", {
   style: "currency",
   currency: "RUB",
 });
 
 export default function OffersTable({ offers }) {
+  const dispatch = useDispatch();
+  const windowed = useOffersWindow(offers);
+  const { sort, order } = useSelector(state => state.search);
+  const [announcement, setAnnouncement] = useState('');
+  function changeSort(nextSort, nextOrder) {
+    dispatch(sortChanged({ sort: nextSort, order: nextOrder }));
+    setAnnouncement(sortAnnouncement(nextSort, nextOrder));
+  }
   return (
     <div className="offers-table">
-      <table className="table align-middle mb-0">
+      <StatusAnnouncer>{announcement}</StatusAnnouncer>
+      <table className="table align-middle mb-0" aria-rowcount={offers.length + 1}>
         <caption className="visually-hidden">
           Найденные детали и предложения по складам
         </caption>
         <thead>
-          <tr>
-            <th scope="col">Деталь / производитель</th>
-            <th scope="col">Склад</th>
-            <th scope="col" className="text-end">
-              Цена
-            </th>
-            <th scope="col" className="text-end">
-              Остаток
-            </th>
+          <tr aria-rowindex={1}>
+            {sortColumns.map(column => (
+              <th key={column.key} scope="col" aria-label={column.label} className={['price', 'stock'].includes(column.key) ? 'text-end' : undefined} aria-sort={sort === column.key ? (order === 'asc' ? 'ascending' : 'descending') : 'none'}>
+                <button type="button" className="sort-heading" aria-label={column.label} onClick={() => {
+                  const direction = sort !== column.key ? 'asc' : order === 'asc' ? 'desc' : '';
+                  changeSort(direction ? column.key : '', direction);
+                }}>{column.label}</button>
+              </th>
+            ))}
           </tr>
         </thead>
-        <tbody>
-          {offers.map((offer) => (
-            <tr key={offer.id}>
+        <tbody ref={windowed.bodyRef}>
+          {windowed.before > 0 && <Spacer height={windowed.before} />}
+          {windowed.items.map(({ key, index }) => {
+            const offer = offers[index];
+            return <tr key={key} data-index={index} ref={windowed.measure} aria-rowindex={index + 2}>
               <td>
                 <div className="part-identity">
                   <strong>{offer.brand}</strong>{" "}
@@ -47,9 +64,14 @@ export default function OffersTable({ offers }) {
                 </span>
               </td>
             </tr>
-          ))}
+          })}
+          {windowed.after > 0 && <Spacer height={windowed.after} />}
         </tbody>
       </table>
     </div>
   );
+}
+
+function Spacer({ height }) {
+  return <tr className="offers-spacer" aria-hidden="true" role="presentation"><td role="presentation" colSpan={4} style={{ height }} /></tr>;
 }

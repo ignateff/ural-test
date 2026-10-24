@@ -413,3 +413,53 @@ select:focus-visible,
      длинные числа оставались внутри карточки и не давали прокрутку вбок. */
   .table td[data-label] { grid-template-columns: minmax(0, 1fr); row-gap: 1px; }
 }
+
+.sort-heading { border: 0; padding: 0; background: transparent; color: inherit; font: inherit; font-weight: inherit; text-align: inherit; cursor: pointer; }
+.table th[aria-sort="ascending"] .sort-heading::after { content: " ↑"; }
+.table th[aria-sort="descending"] .sort-heading::after { content: " ↓"; }
+.sort-heading:focus-visible { outline: 2px solid #28633c; outline-offset: 3px; border-radius: 2px; }
+.mobile-sort { display: none; }
+@media (max-width: 575px) {
+  .mobile-sort { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 12px; }
+  .mobile-sort select { min-width: 0; max-width: 100%; flex: 1; padding: 6px; border: 1px solid #71836f; border-radius: 5px; background: white; }
+  .sort-heading { visibility: hidden; }
+}
+
+.offers-filters { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; margin-bottom: 12px; }
+.offer-filter-group { min-width: 0; margin: 0; padding: 0; border: 0; }
+.offer-filter-group legend { float: none; width: auto; margin: 0 0 4px; font-size: 13px; font-weight: 600; }
+.offer-filter-group select { max-width: 100%; padding: 6px; border: 1px solid #71836f; border-radius: 5px; background: white; }
+.filter-reset { padding: 6px 10px; border: 1px solid #71836f; border-radius: 5px; background: #f7f9f4; color: #244c31; }
+.offers-filters :is(select, button):focus-visible { outline: 2px solid #28633c; outline-offset: 2px; }
+
+.multi-offer-filter { flex: 1 1 220px; min-width: 0; margin: 0; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; }
+.multi-offer-filter legend { float: none; width: auto; margin: 0; padding: 0 4px; font-size: 12px; font-weight: 700; }
+.multi-offer-options { display: flex; flex-wrap: wrap; gap: 8px 12px; }
+.multi-offer-options label { display: flex; align-items: start; gap: 6px; max-width: 100%; font-size: 12px; cursor: pointer; }
+.multi-offer-options span { overflow-wrap: anywhere; }
+.multi-offer-options input { flex-shrink: 0; margin-top: 3px; }
+.multi-offer-options input:focus-visible { outline: 3px solid #28633c; outline-offset: 2px; }
+.price-filter-bounds { display: flex; gap: 6px; }
+.price-filter-bounds label { display: flex; align-items: center; gap: 4px; font-size: 13px; min-width: 0; }
+.price-filter-bounds input { width: 90px; min-width: 0; max-width: 100%; padding: 6px; border: 1px solid #71836f; border-radius: 5px; }
+.offers-filters input:focus-visible { outline: 2px solid #28633c; outline-offset: 2px; }
+
+.offers-filters[hidden] { display: none; }
+.offers-toolbar { display: none; }
+.filter-toggle { padding: 6px 10px; border: 1px solid #71836f; border-radius: 5px; background: #f7f9f4; color: #244c31; white-space: nowrap; }
+.filter-toggle:focus-visible { outline: 2px solid #28633c; outline-offset: 2px; }
+@media (max-width: 575px) {
+  .offers-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .offers-toolbar .mobile-sort { margin: 0; flex: 1; min-width: 0; }
+  .offers-toolbar .mobile-sort label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .offers-toolbar .mobile-sort select { width: 100%; }
+}
+
+/* Спейсеры сохраняют высоту всей таблицы, но не наследуют оформление карточек. */
+.table tr.offers-spacer, .table tr.offers-spacer td { padding: 0; margin: 0; border: 0; border-radius: 0; line-height: 0; font-size: 0; min-width: 0; }
+@media (max-width: 575px) {
+  .table tr.offers-spacer td { display: block; width: 100%; }
+}
+/* Перестройкой окна управляет виртуализатор; браузер не привязывает страницу
+   к удаляемой строке при смене порядка или размеров. */
+.offers-table { overflow-anchor: none; }
