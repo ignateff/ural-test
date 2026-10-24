@@ -9,7 +9,7 @@ it('показывает сброс пустого результата даже
  stubFetch({goods:[{brand:'ASAM',number:'1',warehouses:[{code:'А',price:10,stock:2}]}]});
  renderApp({number:'1',brand:'ASAM'});
  await screen.findByText('Ничего не найдено по выбранным фильтрам');
- expect(screen.getByRole('button',{name:'Фильтры (1)'})).toHaveAttribute('aria-expanded','false');
+ expect(screen.getByRole('button',{name:'Настроить фильтры (1)'})).toHaveAttribute('aria-expanded','false');
  const reset=screen.getByRole('button',{name:'Сбросить фильтры'});expect(reset).toBeVisible();
  await userEvent.setup().click(reset);await screen.findByRole('table');expect(location.search).toContain('sort=price&order=desc');
 });

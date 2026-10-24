@@ -3,7 +3,7 @@
 // внешнего запроса через существующий fetch-seam.
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import axe from "axe-core";
 import { expect, vi } from "vitest";
 import App from "../src/App";
@@ -50,4 +50,15 @@ export async function expectAccessible() {
       })),
     })),
   ).toEqual([]);
+}
+
+// Действия через тот же публичный интерфейс, что и у пользователя.
+export async function openOfferFilters(user) {
+  if (!screen.queryByRole('dialog', { name: 'Фильтры' })) {
+    await user.click(screen.getByRole('button', { name: /^Настроить фильтры/ }));
+  }
+}
+export async function closeOfferFilters(user) {
+  const close = screen.queryByRole('button', { name: 'Закрыть фильтры' });
+  if (close) await user.click(close);
 }

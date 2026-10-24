@@ -3,7 +3,7 @@ import OffersFilters from "./OffersFilters";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { sortOffers } from "../offerSorting";
-import { loadOffers, filtersReset } from "../store";
+import { loadOffers } from "../store";
 import ErrorMessage from "./ErrorMessage";
 import Loader from "./Loader";
 import OffersTable from "./OffersTable";
@@ -48,9 +48,7 @@ export default function OffersPanel() {
           02
         </span>
         <h2 id="results-heading">Детали и предложения</h2>
-        {offersStatus === "success" && (
-          <span className="result-count">{hasFilters ? `Показано ${filteredOffers.length} из ${offers.length}` : `Строк: ${offers.length}`}</span>
-        )}
+
       </div>
       {!brand && (
         <div className="empty-results">
@@ -85,8 +83,8 @@ export default function OffersPanel() {
       {offersStatus === "success" &&
         (offers.length ? (
           <>
-            <OffersFilters showReset={filteredOffers.length > 0} />
-            {filteredOffers.length ? <OffersTable offers={sortedOffers} /> : <div className="state"><p>Ничего не найдено по выбранным фильтрам</p><button type="button" className="filter-reset" onClick={() => dispatch(filtersReset())}>Сбросить фильтры</button></div>}
+            <OffersFilters visibleCount={filteredOffers.length} totalCount={offers.length} />
+            {filteredOffers.length ? <OffersTable offers={sortedOffers} /> : <p className="state">Ничего не найдено по выбранным фильтрам</p>}
           </>
         ) : (
           <p className="state">{noResultsMessage}</p>

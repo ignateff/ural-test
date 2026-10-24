@@ -2,13 +2,13 @@
 import { afterEach, expect, it, vi } from 'vitest';
 import { cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderApp, stubFetch, expectAccessible } from './app-test-helpers';
+import { renderApp, stubFetch, expectAccessible, openOfferFilters, closeOfferFilters } from './app-test-helpers';
 const goods = [{goodsID:'a',brand:'ASAM',number:'1',name:'Искомая',warehouses:[{code:'А',price:10.25,stock:2},{code:'Б',price:20.5,stock:0}],analogues:[
  {goodsID:'b',brand:'FEBI',number:'2',name:'Аналог',warehouses:[{code:'В',price:15.75,stock:1}]},
  {goodsID:'c',brand:'MEYLE',number:'3',name:'Без предложений',warehouses:[]},
 ]}];
 const rows=()=>within(screen.getByRole('table')).getAllByRole('row').slice(1).map(row=>within(row).getAllByRole('cell')[1].textContent);
-async function open(){stubFetch({goods});renderApp({number:'1',brand:'ASAM'});await screen.findByRole('table');return userEvent.setup();}
+async function open(){stubFetch({goods});renderApp({number:'1',brand:'ASAM'});await screen.findByRole('table');const user=userEvent.setup(); await openOfferFilters(user); return user;}
 afterEach(()=>{cleanup();vi.unstubAllGlobals();history.replaceState(null,'','/');});
 it('выбирает искомую деталь и аналоги, сочетая тип с наличием',async()=>{
  const user=await open(); const kind=screen.getByRole('combobox',{name:'Тип строки'});
@@ -29,7 +29,7 @@ it('фильтрует по включительным границам с ко�
  expect(fetch).toHaveBeenCalledTimes(1);
 });
 it('показывает пустой результат при обратном диапазоне, сбрасывает фильтры без сортировки',async()=>{
- const user=await open();await user.click(screen.getByRole('button',{name:'Цена'}));
+ const user=await open();await closeOfferFilters(user);await user.click(screen.getByRole('button',{name:'Цена'}));await openOfferFilters(user);
  await user.type(screen.getByRole('spinbutton',{name:'Цена от'}),'30');
  await user.type(screen.getByRole('spinbutton',{name:'Цена до'}),'10');
  expect(screen.getByText('Ничего не найдено по выбранным фильтрам')).toBeVisible();expect(screen.getByText('Показано 0 из 4')).toBeVisible();
@@ -43,9 +43,10 @@ it('восстанавливает тип и цену из ссылки, очи�
  expect(screen.getByRole('combobox',{name:'Тип строки'})).toHaveValue('analogue');
  expect(screen.getByRole('spinbutton',{name:'Цена от'})).toHaveValue(15.75);
  fetch.mockResolvedValue({ok:true,json:async()=>({goods:[...goods,{brand:'FEBI',number:'1'}]})});
+ await closeOfferFilters(user);
  await user.clear(screen.getByRole('textbox',{name:'Артикул детали'}));await user.type(screen.getByRole('textbox',{name:'Артикул детали'}),'2');
  await screen.findByRole('option',{name:'FEBI'});await user.selectOptions(screen.getByRole('combobox',{name:'Производитель искомой детали'}),'ASAM');
- await screen.findByRole('table');expect(screen.getByRole('combobox',{name:'Тип строки'})).toHaveValue('');expect(screen.getByRole('spinbutton',{name:'Цена от'})).toHaveValue(null);
+ await screen.findByRole('table');await openOfferFilters(user);expect(screen.getByRole('combobox',{name:'Тип строки'})).toHaveValue('');expect(screen.getByRole('spinbutton',{name:'Цена от'})).toHaveValue(null);
  expect(location.search).not.toContain('kind=');expect(location.search).not.toContain('priceFrom=');expect(location.search).toContain('sort=price&order=desc');
 });
 it('отбрасывает нечисловые, бесконечные границы и неизвестный тип из ссылки',async()=>{

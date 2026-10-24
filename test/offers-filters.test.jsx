@@ -2,13 +2,13 @@
 import { afterEach, expect, it, vi } from 'vitest';
 import { cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderApp, stubFetch, expectAccessible } from './app-test-helpers';
+import { renderApp, stubFetch, expectAccessible, openOfferFilters, closeOfferFilters } from './app-test-helpers';
 const goods = [
  { goodsID: 'a', brand: 'ASAM', number: '1', name: 'Деталь', warehouses: [{code: 'Первый', price: 20, stock: 2}, {code: 'Второй', price: 10, stock: 0}] },
  { goodsID: 'b', brand: 'FEBI', number: '2', name: 'Без складских предложений', warehouses: [] },
 ];
 const rows = () => within(screen.getByRole('table')).getAllByRole('row').slice(1).map(row => within(row).getAllByRole('cell')[1].textContent);
-async function open(data=goods) { stubFetch({goods:data}); renderApp({number:'1',brand:'ASAM'}); await screen.findByRole('table'); return userEvent.setup(); }
+async function open(data=goods) { stubFetch({goods:data}); renderApp({number:'1',brand:'ASAM'}); await screen.findByRole('table'); const user=userEvent.setup(); await openOfferFilters(user); return user; }
 afterEach(()=>{cleanup();vi.unstubAllGlobals();history.replaceState(null,'','/');});
 it('фильтрует наличие сразу, включает деталь без складских предложений в отсутствие и сохраняет фокус', async()=>{
  const user=await open();
@@ -28,7 +28,9 @@ it('фильтрует наличие сразу, включает деталь 
 });
 it('сбрасывает пустой результат фильтрации, сохраняя сортировку и не делая запросов', async()=>{
  const user=await open([goods[0], {...goods[1],warehouses:[{code:'Третий',price:5,stock:1}]}].map(part=>({...part,warehouses:part.warehouses.filter(w=>w.stock>0)})));
+ await closeOfferFilters(user);
  await user.click(screen.getByRole('button',{name:'Цена'}));
+ await openOfferFilters(user);
  const select=screen.getByRole('combobox',{name:'Наличие'});
  await user.selectOptions(select,'out');
  expect(screen.getByText('Ничего не найдено по выбранным фильтрам')).toBeVisible();
@@ -47,16 +49,20 @@ it('восстанавливает наличие из ссылки и сбра�
  const user=await open();
  expect(rows()).toEqual(['Второй','Нет предложений']);
  fetch.mockResolvedValue({ok:true,json:async()=>({goods})});
+ await closeOfferFilters(user);
  await user.clear(screen.getByRole('textbox',{name:'Артикул детали'}));
  await user.type(screen.getByRole('textbox',{name:'Артикул детали'}),'2');
  await screen.findByRole('option',{name:'FEBI'});
  await user.selectOptions(screen.getByRole('combobox',{name:'Производитель искомой детали'}),'ASAM');
  await screen.findByRole('table');
+ await openOfferFilters(user);
  expect(rows()).toEqual(['Первый','Второй','Нет предложений']);
  expect(screen.getByRole('combobox',{name:'Наличие'})).toHaveValue('');
  await user.selectOptions(screen.getByRole('combobox',{name:'Наличие'}),'in');
+ await closeOfferFilters(user);
  await user.selectOptions(screen.getByRole('combobox',{name:'Производитель искомой детали'}),'FEBI');
  await screen.findByRole('table');
+ await openOfferFilters(user);
  expect(rows()).toEqual(['Первый','Второй','Нет предложений']);
  expect(location.search).toContain('sort=price&order=desc');
  expect(location.search).not.toContain('stock=');

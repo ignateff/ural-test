@@ -11,7 +11,7 @@ export default function SortSelect() {
     dispatch(sortChanged({sort, order}));
     setAnnouncement(sortAnnouncement(sort, order));
   }
-  return <>      <div className="mobile-sort">
+  return <>      <div className="offer-sort">
         <label htmlFor="offers-sort">Сортировка</label>
         <select id="offers-sort" value={sort ? `${sort}:${order}` : ''} onChange={event => {
           const [key = '', direction = ''] = event.target.value.split(':');

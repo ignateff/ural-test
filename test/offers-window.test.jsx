@@ -2,7 +2,7 @@
 import {afterEach,expect,it,vi} from 'vitest';
 import {cleanup,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {renderApp,stubFetch} from './app-test-helpers';
+import {renderApp,stubFetch,openOfferFilters} from './app-test-helpers';
 const goods=Array.from({length:300},(_,i)=>({goodsID:`p${i}`,brand:'ASAM',number:`part-${i}`,warehouses:[{code:'Склад',price:i+1,stock:i<3?1:0}]}));
 afterEach(()=>{cleanup();vi.unstubAllGlobals();history.replaceState(null,'','/');});
 it('длинный подбор рисует окно, сохраняя полный счётчик и доступные индексы',async()=>{
@@ -22,6 +22,7 @@ it('фильтрация и сортировка действуют на пол�
  await user.click(screen.getByRole('button',{name:'Цена'}));
  expect(screen.getByRole('button',{name:'Цена'})).toHaveFocus();
  expect(within(screen.getByRole('table')).getAllByRole('row')[1]).toHaveTextContent('part-299');
+ await openOfferFilters(user);
  await user.selectOptions(screen.getByRole('combobox',{name:'Наличие'}),'in');
  const table=screen.getByRole('table');
  expect(table).toHaveAttribute('aria-rowcount','4');
