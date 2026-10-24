@@ -1,0 +1,415 @@
+:root {
+  /* Индикатор клавиатурного фокуса: приглушённый зелёный, 5.15:1 на белом и
+     не ниже 3:1 на фонах панели (порог WCAG для нетекстового контраста). */
+  --focus-ring: #5b7364;
+  font-family: Arial, sans-serif;
+  color: #20332e;
+  background: #f6f7f4;
+}
+body {
+  margin: 0;
+  background: #f6f7f4;
+  color: #20332e;
+  font-family: Arial, sans-serif;
+}
+.page-width {
+  max-width: 1100px;
+}
+.topbar {
+  background: #fff;
+  border-bottom: 1px solid #e1e6de;
+  padding: 22px 0;
+}
+.wordmark {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #20332e;
+  font-size: 23px;
+  font-weight: 750;
+  letter-spacing: -1px;
+}
+.brand-icon {
+  display: grid;
+  place-items: center;
+  background: #174f43;
+  color: #fff;
+  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  margin-right: 10px;
+  font-size: 28px;
+}
+.brand-dot {
+  color: #bb7238;
+}
+.supplier-label {
+  font-size: 12px;
+  color: #78837c;
+}
+h1 {
+  font-size: clamp(36px, 5vw, 54px);
+  font-weight: 700;
+  letter-spacing: -2px;
+  line-height: 1.1;
+}
+h1 span {
+  color: #6d8272;
+}
+.search-panel,
+.results-panel {
+  background: #fff;
+  border: 1px solid #dfe5dc;
+  border-radius: 14px;
+  padding: 28px;
+  margin-bottom: 20px;
+}
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.section-heading h2 {
+  font-size: 19px;
+  letter-spacing: -0.4px;
+  margin: 0;
+  font-weight: 650;
+}
+.step {
+  font-size: 11px;
+  font-weight: 700;
+  color: #174f43;
+  background: #eaf0e8;
+  border-radius: 7px;
+  padding: 8px;
+}
+.step.muted {
+  /* 4.91:1 на #f0f2ee: вторичный текст, но читаемый. */
+  background: #f0f2ee;
+  color: #616b64;
+}
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+.input-group {
+  max-width: 590px;
+}
+.input-group-text {
+  background: #fafbf8;
+  border-color: #d7dfd2;
+  color: #64806e;
+  font-size: 25px;
+  line-height: 1;
+  padding: 0 14px;
+}
+.form-control {
+  padding: 14px;
+  border-color: #d7dfd2;
+  background: #fafbf8;
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: #517961;
+  box-shadow: 0 0 0 0.2rem #174f4319;
+  background: #fff;
+}
+/* Кнопка очистки артикула не задаёт высоту строки: её содержимое ниже поля,
+   поэтому .input-group (Bootstrap, align-items: stretch) растягивает кнопку по
+   высоте поля артикула. Иначе при заполненном артикуле поле оказывается выше
+   селектора производителя. Содержимое иконки тоже держим ниже поля. */
+.clear-button {
+  /* Свои цвета через переменные Bootstrap: при фокусе .btn возвращает именно их. */
+  --bs-btn-color: #64736a;
+  --bs-btn-bg: #fafbf8;
+  --bs-btn-border-color: #d7dfd2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  line-height: 1;
+  border: 1px solid #d7dfd2;
+  background: #fafbf8;
+  color: #64736a;
+  font-size: 22px;
+}
+.form-text {
+  font-size: 12px;
+  color: #7d877f;
+  margin: 10px 0 22px;
+}
+.hint {
+  font-size: 13px;
+  color: #7a857c;
+  margin-bottom: 0;
+}
+.example-button {
+  color: #174f43;
+  border: 0;
+  border-bottom: 1px dashed #869b8d;
+  background: transparent;
+  padding: 0;
+}
+.result-count {
+  background: #edf1e9;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-left: 6px;
+  font-size: 11px;
+  color: #59715f;
+}
+.empty-results {
+  text-align: center;
+  padding: 30px 10px 38px;
+  color: #859087;
+}
+.empty-symbol {
+  display: grid;
+  place-items: center;
+  margin: 0 auto 15px;
+  border: 1px solid #e2e7de;
+  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  font-size: 25px;
+}
+.empty-results h3 {
+  font-size: 15px;
+  color: #657368;
+}
+.empty-results p {
+  font-size: 13px;
+  margin-bottom: 0;
+}
+.selection {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+.selection span {
+  /* 4.83:1 на белом: разделитель остаётся вторичным, но не бледным. */
+  margin: 0 10px;
+  color: #6b746d;
+}
+.table th {
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #7b877e;
+  background: #f7f9f4;
+  padding: 14px 12px;
+  border-bottom: 1px solid #e3e8dd;
+}
+.table td {
+  padding: 20px 12px;
+  border-color: #ecf0e8;
+  font-size: 13px;
+  min-width: 100px;
+}
+.table td:first-child {
+  min-width: 260px;
+  width: 50%;
+}
+.part-number {
+  font-family: monospace;
+  font-size: 12px;
+  color: #778578;
+}
+.part-name {
+  color: #677468;
+  margin: 6px 0 8px;
+}
+.kind {
+  font-size: 10px;
+  color: #7f7762;
+  background: #f5f2e9;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+.kind.original {
+  color: #416b50;
+  background: #edf3e8;
+}
+.price {
+  font-weight: 700;
+  white-space: nowrap;
+}
+.stock {
+  color: #417253;
+  white-space: nowrap;
+}
+.warehouse {
+  color: #718075;
+}
+.state {
+  padding: 24px 0;
+  font-size: 14px;
+  color: #6b7b6e;
+}
+.alert {
+  font-size: 14px;
+}
+footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #8c968d;
+  padding: 6px 0 32px;
+}
+/* Единый спокойный индикатор фокуса: приглушённый зелёный из палитры приложения,
+   2px вместо яркого толстого контура. Классы .form-control/.form-select/.btn указаны
+   явно: Bootstrap гасит их outline правилами :focus той же специфичности, и при
+   равенстве выигрывает правило, расположенное ниже в каскаде. Цвет — в переменной,
+   чтобы поля, кнопки и ссылки не расходились. */
+button:focus-visible,
+a:focus-visible,
+.btn:focus-visible,
+input:focus-visible,
+select:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+/* Bootstrap при фокусе .btn перекрашивает кнопку в hover-цвета и добавляет яркий
+   ореол (синий/красный). Нам нужен только спокойный контур, поэтому возвращаем
+   базовые цвета кнопки через её же переменные и убираем ореол. */
+.btn:focus-visible {
+  color: var(--bs-btn-color);
+  background-color: var(--bs-btn-bg);
+  border-color: var(--bs-btn-border-color);
+  box-shadow: none;
+}
+@media (max-width: 575px) {
+  .topbar {
+    padding: 16px 0;
+  }
+  .wordmark {
+    font-size: 20px;
+  }
+  .supplier-label {
+    font-size: 10px;
+  }
+  .search-panel,
+  .results-panel {
+    padding: 20px 16px;
+  }
+  .section-heading h2 {
+    font-size: 17px;
+  }
+  footer {
+    display: block;
+    line-height: 1.8;
+  }
+  footer span {
+    display: block;
+  }
+}
+
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+  transform: translateY(-200%);
+  padding: 12px 16px;
+  border-radius: 6px;
+  background: #174f43;
+  color: #fff;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .spinner-border {
+    animation: none;
+  }
+}
+
+/* Compact workspace: the document owns the only scroll area. */
+:root { --search-height: 0px; }
+.topbar { padding: 12px 0; }
+.page-title { font-size: 24px; letter-spacing: -.5px; margin: 18px 0 12px; }
+.search-panel { position: sticky; top: 0; z-index: 5; padding: 12px 16px; border-radius: 10px; }
+.search-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.search-fields > div { min-width: 0; }
+.form-control, .form-select { padding: 8px 12px; min-height: 40px; border-color: #a5b4a7; }
+.form-label { margin-bottom: 4px; }
+.selected-brand { overflow-wrap: anywhere; }
+.form-text { margin: 4px 0 0; }
+.search-panel .state, .search-panel .alert, .search-panel .hint { margin: 6px 0 0; padding: 0; }
+.search-panel .alert { padding: 6px; }
+.results-panel { padding: 16px; }
+.section-heading { margin-bottom: 12px; flex-wrap: wrap; }
+.selection { margin-bottom: 12px; }
+.table { table-layout: fixed; width: 100%; }
+/* Заголовки закрепляются под фактической высотой панели: --search-height
+   выставляет SearchPanel до первой отрисовки и обновляет ResizeObserver.
+   Нулевое значение по умолчанию прячет заголовки за панелью на один кадр,
+   но не оставляет видимой полосы строк между панелью и заголовками. */
+.table th {
+  position: sticky;
+  top: var(--search-height, 0px);
+  z-index: 2;
+  padding: 7px 8px;
+  line-height: 1.3;
+  color: #46594a;
+  background: #f7f9f4;
+  box-shadow: inset 0 -1px 0 #dfe5dc;
+}
+.table th:first-child { width: 46%; }
+.table th:nth-child(2) { width: 20%; }
+.table th:nth-child(3), .table th:nth-child(4) { width: 17%; }
+/* Таблица не создаёт собственной прокрутки: вертикально скроллится документ. */
+.offers-table { overflow: visible; }
+.table td, .table td:first-child { padding: 5px 8px; min-width: 0; overflow-wrap: anywhere; line-height: 1.35; vertical-align: middle; }
+.part-identity { display: flex; flex-wrap: wrap; align-items: baseline; gap: 1px 8px; }
+.part-name { margin: 1px 0 0; line-height: 1.35; }
+.kind { font-size: 11px; line-height: 1.45; padding: 1px 6px; white-space: nowrap; }
+.price, .stock { white-space: normal; }
+.form-text, .hint, .supplier-label, .part-number, .part-name, .warehouse, .state, footer, .empty-results, .empty-results h3 { color: #506354; }
+.kind { color: #625431; }
+.kind.original { color: #33563e; }
+.skip-link { z-index: 20; }
+@media (max-width: 575px) {
+  .search-fields { grid-template-columns: 1fr; gap: 6px; }
+  .search-panel, .results-panel { padding: 10px; }
+  .page-title { font-size: 21px; margin: 12px 0; }
+  /* Одна и та же таблица становится карточками: заголовки скрыты визуально,
+     но остаются семантикой таблицы, а ячейки получают подписи из data-label. */
+  .table, .table tbody { display: block; }
+  .table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .table tr { display: block; border: 1px solid #cbd5c8; border-radius: 10px; margin-bottom: 10px; padding: 8px 10px; }
+  .table td, .table td:first-child { display: block; width: auto; border: 0; padding: 4px; }
+  .table td:first-child { padding-bottom: 6px; border-bottom: 1px solid #e4e9df; margin-bottom: 2px; }
+  /* Подпись — отдельная неразрывная колонка слева, значение — справа.
+     Подпись не сжимается и не рвётся по буквам, значение переносится по словам. */
+  .table td[data-label] {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    column-gap: 8px;
+    align-items: baseline;
+    padding: 3px 4px;
+    text-align: right;
+  }
+  .table td[data-label]::before {
+    /* Пустой альтернативный текст: подпись остаётся видимой, но скринридер
+       читает только заголовок колонки, а не её повтор дважды. Первая строка —
+       запасной вариант для браузеров без синтаксиса alt: там подпись просто
+       останется видимым текстом, как и раньше. */
+    content: attr(data-label);
+    content: attr(data-label) / "";
+    white-space: nowrap;
+    overflow-wrap: normal;
+    font-weight: 400;
+    color: #506354;
+    text-align: left;
+  }
+  .table td.price { font-variant-numeric: tabular-nums; }
+}
+@media (max-width: 259px) {
+  /* Очень узкий экран или увеличенный текст: подпись над значением, чтобы
+     длинные числа оставались внутри карточки и не давали прокрутку вбок. */
+  .table td[data-label] { grid-template-columns: minmax(0, 1fr); row-gap: 1px; }
+}
