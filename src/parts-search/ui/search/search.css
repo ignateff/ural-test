@@ -13,12 +13,20 @@
   font-weight: 600;
   margin-bottom: 4px;
 }
-.input-group {
+.article-input {
+  display: flex;
   max-width: 590px;
+  border: 1px solid var(--color-control-border);
+  border-radius: 6px;
+  background: var(--color-surface);
 }
-.input-group-text {
-  background: var(--color-surface-subtle);
-  border-color: var(--color-border);
+.article-input:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.2rem var(--color-focus-shadow);
+}
+.article-input-icon {
+  display: flex;
+  align-items: center;
   color: var(--color-text-muted);
   font-size: 25px;
   line-height: 1;
@@ -36,20 +44,37 @@
   box-shadow: 0 0 0 0.2rem var(--color-focus-shadow);
   background: var(--color-surface);
 }
+.article-input .form-control {
+  flex: 1;
+  min-width: 0;
+  width: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+}
+.article-input .form-control:focus {
+  outline: none;
+  box-shadow: none;
+}
 .clear-button {
-  /* Свои цвета через переменные Bootstrap: при фокусе .btn возвращает именно их. */
-  --bs-btn-color: var(--color-text-muted);
-  --bs-btn-bg: var(--color-surface-subtle);
-  --bs-btn-border-color: var(--color-border);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 12px;
   line-height: 1;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface-subtle);
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
   color: var(--color-text-muted);
   font-size: 22px;
+}
+.clear-button:hover,
+.clear-button:active {
+  color: var(--color-primary);
+}
+.clear-button:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -4px;
 }
 .form-text {
   font-size: 12px;
@@ -88,6 +113,9 @@
   min-height: 40px;
   border-color: var(--color-control-border);
 }
+.search-fields .form-select {
+  padding-right: 2.25rem;
+}
 .selected-brand {
   overflow-wrap: anywhere;
 }
@@ -114,4 +142,10 @@
 .form-select:disabled {
   background-color: var(--color-surface-subtle);
   color: var(--color-text-muted);
+}
+
+@media (max-height: 600px) {
+  .search-panel {
+    position: static;
+  }
 }

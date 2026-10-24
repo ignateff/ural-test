@@ -17,6 +17,7 @@ export const initialState = {
   brand: "",
   brands: [],
   offers: [],
+  offersFor: null,
   brandsStatus: "idle",
   offersStatus: "idle",
   brandsError: "",
@@ -34,6 +35,11 @@ const slice = createSlice({
       number: action.payload,
       sort: state.sort,
       order: state.order,
+      ...(action.payload.trim() && {
+        offers: state.offers,
+        offersFor: state.offersFor,
+        filters: state.offers.length ? state.filters : emptyFilters,
+      }),
     }),
     filtersChanged(state, action) {
       Object.assign(state.filters, action.payload);
@@ -46,9 +52,8 @@ const slice = createSlice({
       state.order = action.payload.order;
     },
     brandSelected(state, action) {
-      state.filters = emptyFilters;
+      if (!state.offers.length) state.filters = emptyFilters;
       state.brand = action.payload;
-      state.offers = [];
       state.offersStatus = "idle";
       state.offersError = "";
       state.offersRequestId = null;
@@ -78,7 +83,15 @@ const slice = createSlice({
       })
       .addCase(loadOffers.fulfilled, (state, action) => {
         if (state.offersRequestId !== action.meta.requestId) return;
+        const { number, brand } = action.meta.arg;
+        if (
+          state.offersFor &&
+          (state.offersFor.number !== number || state.offersFor.brand !== brand)
+        ) {
+          state.filters = { ...emptyFilters };
+        }
         state.offers = action.payload;
+        state.offersFor = { number, brand };
         // Ссылку можно проверить лишь после успешной загрузки полного подбора.
         const available = availableFilterValues(action.payload);
         state.filters.wh = (state.filters.wh || []).filter((value) => available.wh.includes(value));

@@ -239,40 +239,46 @@
   font-weight: 600;
 }
 .active-offer-filters {
-  display: flex;
-  align-items: start;
-  gap: 12px;
+  display: grid;
+  gap: 6px;
   padding: 10px 0;
   margin-bottom: 12px;
   border-block: 1px solid var(--color-border);
 }
-.active-offer-filters-label {
-  flex-shrink: 0;
-  padding-top: 5px;
-  font-size: 12px;
-  color: var(--color-text-muted);
-}
 .active-offer-filters ul {
+  position: relative;
   display: flex;
-  flex: 1;
   flex-wrap: wrap;
+  align-items: start;
   gap: 6px;
   min-width: 0;
+  overflow: hidden;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 .active-offer-filters li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   min-width: 0;
   max-width: 100%;
+}
+.active-offer-filters li[aria-hidden="true"] {
+  visibility: hidden;
+}
+.active-filter-group {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
 }
 .active-offer-filters li button {
   display: inline-flex;
   align-items: center;
   gap: 9px;
+  min-width: 0;
   max-width: 100%;
   text-align: left;
-  overflow-wrap: anywhere;
   border: 1px solid var(--color-border);
   border-radius: 5px;
   background: var(--color-page);
@@ -280,20 +286,43 @@
   padding: 5px 8px;
   font-size: 12px;
 }
-.active-offer-filters li button span {
+.active-filter-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.active-offer-filters ul[data-expanded="true"] .active-filter-value {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.active-offer-filters ul[data-measuring="true"] .active-filter-value {
+  white-space: nowrap;
+}
+.active-offer-filters li button span[aria-hidden] {
   flex-shrink: 0;
   font-size: 16px;
   line-height: 1;
 }
+.active-filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 16px;
+}
+.active-filter-toggle,
 .active-offer-filters .filter-reset {
-  flex-shrink: 0;
   padding: 5px 0;
   border: 0;
   border-radius: 0;
   background: transparent;
+  color: var(--color-primary);
   text-decoration: underline;
   text-underline-offset: 3px;
   font-size: 12px;
+}
+.active-offer-filters .filter-reset {
+  margin-left: auto;
 }
 @media (max-width: 575px) {
   .offer-filter-drawer {
@@ -307,13 +336,6 @@
   }
   .offer-filter-drawer-footer {
     padding: 12px 18px max(16px, env(safe-area-inset-bottom));
-  }
-  .active-offer-filters {
-    flex-wrap: wrap;
-  }
-  .active-offer-filters-label {
-    width: 100%;
-    padding: 0;
   }
 }
 

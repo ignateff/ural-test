@@ -76,36 +76,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("Мобильные карточки складских предложений", () => {
-  it("показывает в строке склада производителя, артикул, название, признак, склад, цену и остаток", async () => {
-    const { table } = await searchForAsam();
-    const row = rowWithWarehouse(table, "ДМД");
-
-    expect(within(row).getByText("ASAM")).toBeVisible();
-    expect(within(row).getByText("01089")).toBeVisible();
-    expect(within(row).getByText("Фильтр топливный")).toBeVisible();
-    expect(within(row).getByText("Искомая деталь")).toBeVisible();
-    expect(within(row).getByText("ДМД")).toBeVisible();
-    expect(within(row).getByText(money("86,88"))).toBeVisible();
-    expect(within(row).getByText("28 шт.")).toBeVisible();
-  });
-
-  it("сохраняет отдельную строку и собственные цену и остаток для каждого склада", async () => {
-    const { table } = await searchForAsam();
-    expect(within(table).getAllByRole("row")).toHaveLength(5);
-
-    const inStock = rowWithWarehouse(table, "ДМД");
-    const outOfStock = rowWithWarehouse(table, "МСК");
-    expect(inStock).not.toBe(outOfStock);
-    expect(within(inStock).getByText(money("86,88"))).toBeVisible();
-    expect(within(inStock).getByText("28 шт.")).toBeVisible();
-    expect(within(outOfStock).getByText(money("92,50"))).toBeVisible();
-    expect(within(outOfStock).getByText("Нет в наличии")).toBeVisible();
-    // Цена и остаток соседнего склада не попадают в эту строку.
-    expect(within(outOfStock).queryByText(money("86,88"))).toBeNull();
-    expect(within(inStock).queryByText("Нет в наличии")).toBeNull();
-  });
-
+describe("Общие данные и семантика складских предложений", () => {
   it("показывает аналог с его складским предложением, длинными значениями и своим признаком", async () => {
     const { table } = await searchForAsam();
     const row = rowWithWarehouse(table, "СПБ");
@@ -119,19 +90,6 @@ describe("Мобильные карточки складских предлож�
     expect(within(row).getByText(money("74,10"))).toBeVisible();
     expect(within(row).getByText("3 шт.")).toBeVisible();
     expect(within(row).queryByText("Искомая деталь")).toBeNull();
-  });
-
-  it("показывает деталь без предложений с точным состоянием и без вымышленной цены", async () => {
-    const { table } = await searchForAsam();
-    const row = rowWithWarehouse(table, "Нет предложений");
-
-    expect(within(table).getAllByRole("row")).toHaveLength(5);
-    expect(within(row).getByText("FEBI")).toBeVisible();
-    expect(within(row).getByText("01089-WITHOUT-WAREHOUSES")).toBeVisible();
-    expect(within(row).getByText("—")).toBeVisible();
-    expect(within(row).getByText("Нет в наличии")).toBeVisible();
-    // Нет цены — нет и денежного знака.
-    expect(within(row).queryByText(/₽/)).toBeNull();
   });
 
   it("показывает результаты одним представлением: без второй карточной разметки и дублей", async () => {

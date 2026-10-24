@@ -6,12 +6,12 @@ import ErrorMessage from "../feedback/ErrorMessage";
 import Loader from "../feedback/Loader";
 import StatusAnnouncer from "../feedback/StatusAnnouncer";
 
-// Высота панели — единственный источник значения для закреплённых заголовков таблицы.
+// Отступ закреплённых элементов учитывает только закреплённую панель поиска.
 function measurePanel(panel) {
   if (!panel) return;
   document.documentElement.style.setProperty(
     "--search-height",
-    `${panel.getBoundingClientRect().height}px`,
+    `${getComputedStyle(panel).position === "sticky" ? panel.getBoundingClientRect().height : 0}px`,
   );
 }
 
@@ -26,9 +26,14 @@ export default function SearchPanel() {
   useLayoutEffect(() => {
     measurePanel(panelRef.current);
     const panel = panelRef.current;
-    const observer = new ResizeObserver(() => measurePanel(panel));
+    const update = () => measurePanel(panel);
+    const observer = new ResizeObserver(update);
     observer.observe(panel);
-    return () => observer.disconnect();
+    window.addEventListener("resize", update);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", update);
+    };
   }, []);
   const query = number.trim();
   const noResultsMessage = `По артикулу «${query}» ничего не найдено. Проверьте номер детали.`;
@@ -65,8 +70,8 @@ export default function SearchPanel() {
           <label htmlFor="part-number" className="form-label">
             Артикул детали
           </label>
-          <div className="input-group">
-            <span className="input-group-text" aria-hidden="true">
+          <div className="article-input">
+            <span className="article-input-icon" aria-hidden="true">
               ⌕
             </span>
             <input
@@ -83,11 +88,7 @@ export default function SearchPanel() {
               onChange={(event) => dispatch(numberChanged(event.target.value))}
             />
             {number && (
-              <button
-                className="btn clear-button"
-                onClick={clearNumber}
-                aria-label="Очистить артикул"
-              >
+              <button className="clear-button" onClick={clearNumber} aria-label="Очистить артикул">
                 ×
               </button>
             )}

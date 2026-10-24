@@ -9,7 +9,10 @@ import {
   loadOffers,
 } from "../../src/parts-search/model/searchSlice";
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+});
 
 describe("Ответ поставщика", () => {
   it("отличает склад с названием «Нет предложений» от детали без складов", () => {
@@ -136,7 +139,7 @@ describe("Защита от устаревших запросов", () => {
     state = searchReducer(state, loadBrands.fulfilled(["CURRENT"], "new", "2"));
     expect(state.brands).toEqual(["CURRENT"]);
   });
-  it("сбрасывает предложения при смене бренда и игнорирует старый ответ", () => {
+  it("игнорирует старый ответ после смены производителя до первого подбора", () => {
     let state = searchReducer(undefined, brandSelected("A"));
     state = searchReducer(state, loadOffers.pending("old", { number: "1", brand: "A" }));
     state = searchReducer(state, brandSelected("B"));
@@ -148,4 +151,118 @@ describe("Защита от устаревших запросов", () => {
     expect(state.offers).toEqual([]);
     expect(state.offersStatus).toBe("idle");
   });
+});
+
+describe("Ошибки и отмена незавершённого HTTP-запроса", () => {
+  function pendingFetch() {
+    const fetch = vi.fn(
+      (_, { signal }) =>
+        new Promise((resolve, reject) => {
+          signal.addEventListener("abort", () => reject(signal.reason), { once: true });
+        }),
+    );
+    vi.stubGlobal("fetch", fetch);
+    return fetch;
+  }
+
+  it("отменяет уже начавшийся запрос по сигналу вызывающего кода", async () => {
+    const fetch = pendingFetch();
+    const controller = new AbortController();
+    const result = searchParts({ number: "1", signal: controller.signal });
+    const rejection = expect(result).rejects.toMatchObject({ name: "AbortError" });
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch.mock.calls[0][1].signal.aborted).toBe(false);
+    controller.abort();
+    await rejection;
+    expect(fetch.mock.calls[0][1].signal.aborted).toBe(true);
+  });
+
+  it("подключает deadline 20 секунд к сигналу выполняющегося fetch", async () => {
+    const deadline = new AbortController();
+    const timeout = vi.spyOn(AbortSignal, "timeout").mockReturnValue(deadline.signal);
+    const fetch = pendingFetch();
+    const result = searchParts({ number: "1", signal: new AbortController().signal });
+    const rejection = expect(result).rejects.toThrow("20 секунд");
+    expect(timeout).toHaveBeenCalledWith(20000);
+    expect(fetch.mock.calls[0][1].signal.aborted).toBe(false);
+    deadline.abort(new DOMException("deadline", "TimeoutError"));
+    await rejection;
+    expect(fetch.mock.calls[0][1].signal.aborted).toBe(true);
+  });
+
+  it.each([
+    ["SyntaxError", "Поставщик вернул некорректный ответ"],
+    ["TimeoutError", "20 секунд"],
+    ["AbortError", null],
+  ])("обрабатывает %s во время чтения тела ответа", async (name, message) => {
+    const error =
+      name === "SyntaxError" ? new SyntaxError("bad JSON") : new DOMException("body", name);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => {
+          throw error;
+        },
+      }),
+    );
+    const result = searchParts({ number: "1" });
+    if (message) await expect(result).rejects.toThrow(message);
+    else await expect(result).rejects.toBe(error);
+  });
+
+  it("объясняет HTTP-ошибку без сообщения поставщика", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: false, json: async () => ({ goods: [] }) }),
+    );
+    await expect(searchParts({ number: "1" })).rejects.toThrow(
+      "Сервис поставщика временно недоступен",
+    );
+  });
+});
+
+describe("Поздняя ошибка устаревшего запроса", () => {
+  it.each([
+    [loadBrands, "brands", "1", "2", ["CURRENT"]],
+    [
+      loadOffers,
+      "offers",
+      { number: "1", brand: "A" },
+      { number: "1", brand: "B" },
+      [{ id: "current", brand: "B" }],
+    ],
+  ])(
+    "сохраняет успешные данные %s после позднего rejected",
+    (load, field, oldArg, newArg, data) => {
+      let state = searchReducer(undefined, load.pending("old", oldArg));
+      state = searchReducer(state, load.pending("new", newArg));
+      state = searchReducer(state, load.fulfilled(data, "new", newArg));
+      const successful = state;
+      state = searchReducer(state, load.rejected(new Error("Старая ошибка"), "old", oldArg));
+      expect(state[field]).toEqual(data);
+      expect(state[`${field}Status`]).toBe("success");
+      expect(state[`${field}Error`]).toBe("");
+      expect(state).toEqual(successful);
+    },
+  );
+});
+
+describe("Приоритет искомой детали при повторе среди аналогов", () => {
+  it.each([true, false])(
+    "сохраняет одну строку искомой детали; сначала оригинал: %s",
+    (originalFirst) => {
+      const original = {
+        goodsID: "same",
+        brand: "ASAM",
+        number: "1",
+        warehouses: [{ id: "w", code: "А", price: 0, stock: 1 }],
+      };
+      const parent = { goodsID: "parent", brand: "FEBI", number: "2", analogues: [original] };
+      const offers = getOffers(originalFirst ? [original, parent] : [parent, original]);
+      expect(offers.filter((offer) => offer.id === "same:w")).toEqual([
+        expect.objectContaining({ brand: "ASAM", price: 0, analogue: false }),
+      ]);
+    },
+  );
 });

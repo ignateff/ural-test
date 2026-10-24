@@ -83,7 +83,11 @@ describe("Адрес как состояние подбора", () => {
   });
 
   it("записывает выбранного производителя и меняет его в адресе", async () => {
-    stubFetch(brands, { goods }, { goods });
+    const fetch = stubFetch(
+      brands,
+      { goods },
+      { goods: goods.map((part) => ({ ...part, brand: "FEBI" })) },
+    );
     const user = userEvent.setup();
     renderApp();
 
@@ -99,8 +103,15 @@ describe("Адрес как состояние подбора", () => {
     });
 
     await screen.findByRole("table");
-    await user.selectOptions(selector, "ASAM");
-    expect(currentParams().get("brand")).toBe("ASAM");
+    await user.selectOptions(selector, "FEBI");
+    await waitFor(() => {
+      expect(currentParams().get("brand")).toBe("FEBI");
+      expect(currentParams().get("number")).toBe("01089");
+      expect(within(screen.getByRole("table")).getByText("FEBI")).toBeVisible();
+    });
+    const request = new URL(fetch.mock.calls.at(-1)[0]);
+    expect(request.searchParams.get("brand")).toBe("FEBI");
+    expect(request.searchParams.get("number")).toBe("01089");
   });
 
   it("кодирует пробелы и спецсимволы артикула в адресе", async () => {

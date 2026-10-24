@@ -76,6 +76,26 @@
   overflow: visible;
   overflow-anchor: none;
 }
+.offers-content[data-loading="true"] {
+  opacity: 0.45;
+}
+.offers-refresh-status {
+  position: sticky;
+  top: calc(var(--search-height, 0px) + 12px);
+  height: 0;
+  z-index: 3;
+}
+.offers-refresh-status .state {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  box-shadow: 0 2px 8px var(--color-popup-shadow);
+}
 .part-identity {
   display: flex;
   flex-wrap: wrap;

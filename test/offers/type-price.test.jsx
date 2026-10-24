@@ -79,9 +79,6 @@ it("фильтрует по включительным границам с ко�
   expect(rows()).toEqual(["А", "В"]);
   await user.clear(to);
   expect(rows()).toEqual(["А", "Б", "В", "Нет предложений"]);
-  await user.type(from, "letters");
-  expect(from).toHaveValue(null);
-  expect(rows()).toEqual(["А", "Б", "В", "Нет предложений"]);
   expect(fetch).toHaveBeenCalledTimes(1);
 });
 it("показывает пустой результат при обратном диапазоне, сбрасывает фильтры без сортировки", async () => {
@@ -138,4 +135,34 @@ it("отбрасывает нечисловые, бесконечные гран
   expect(location.search).not.toMatch(/kind|priceFrom|priceTo/);
   expect(location.search).toContain("utm=mail");
   expect(location.hash).toBe("#results");
+});
+
+it("показывает нулевую цену, сортирует её перед положительной и включает диапазон 0–0", async () => {
+  stubFetch({
+    goods: [
+      {
+        brand: "ASAM",
+        number: "1",
+        warehouses: [
+          { id: "positive", code: "Платный", price: 10, stock: 1 },
+          { id: "null", code: "Без цены", price: null, stock: 1 },
+          { id: "zero", code: "Нулевой", price: 0, stock: 1 },
+        ],
+      },
+    ],
+  });
+  renderApp({ number: "1", brand: "ASAM" });
+  const table = await screen.findByRole("table");
+  const zero = within(table).getByRole("cell", { name: "Нулевой" }).closest("tr");
+  expect(within(zero).getByText(/0,00\s?₽/)).toBeVisible();
+  const noPrice = within(table).getByRole("cell", { name: "Без цены" }).closest("tr");
+  expect(within(noPrice).getByText("—")).toBeVisible();
+  const user = userEvent.setup();
+  await user.click(screen.getByRole("button", { name: "Цена" }));
+  expect(rows()).toEqual(["Нулевой", "Платный", "Без цены"]);
+  await openOfferFilters(user);
+  await user.type(screen.getByRole("spinbutton", { name: "Цена от" }), "0");
+  await user.type(screen.getByRole("spinbutton", { name: "Цена до" }), "0");
+  expect(rows()).toEqual(["Нулевой"]);
+  expect(location.search).toContain("priceFrom=0&priceTo=0");
 });

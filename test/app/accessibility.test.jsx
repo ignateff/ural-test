@@ -92,7 +92,7 @@ describe("Доступность поиска", () => {
     expect(selector).toHaveFocus();
   });
 
-  it("меняет производителя с сохранением артикула и сбрасывает подбор при новом артикуле", async () => {
+  it("меняет производителя и сохраняет предыдущий подбор при новом артикуле", async () => {
     const fetch = stubFetch(
       { goods: [...goods, { ...goods[0], brand: "FEBI" }] },
       { goods },
@@ -116,7 +116,8 @@ describe("Доступность поиска", () => {
     expect(input).toHaveFocus();
     expect(selector).toHaveValue("");
     expect(selector).toBeDisabled();
-    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(screen.getByRole("table")).toBeInTheDocument();
+    expect(screen.getByRole("table").closest("[inert]")).not.toBeNull();
     await screen.findByRole("option", { name: "Производители не найдены" });
     expect(input).toHaveFocus();
   });
@@ -193,7 +194,7 @@ describe("Доступность поиска", () => {
     expect(selector).toHaveFocus();
     expect(input).toHaveValue("01089");
     await user.selectOptions(selector, "ASAM");
-    await screen.findByText("Загружаем предложения и аналоги…");
+    await screen.findByText("Обновляем предложения… Показаны предыдущие данные.");
     await user.click(screen.getByRole("button", { name: "Очистить артикул" }));
     await act(async () => {
       resolveAfterClear({ ok: true, json: async () => ({ goods }) });
@@ -412,6 +413,11 @@ describe("Плотная таблица складских предложени�
       "ASAM 01089 Искомая деталь Фильтр топливный",
       "ASAM 01089 Искомая деталь Фильтр топливный",
     ]);
+    const warehouseRows = within(table).getAllByRole("row").slice(1);
+    expect(within(warehouseRows[0]).queryByText(/120,50/)).toBeNull();
+    expect(within(warehouseRows[1]).queryByText(/86,88/)).toBeNull();
+    expect(within(warehouseRows[0]).queryByText("Нет в наличии")).toBeNull();
+    expect(within(warehouseRows[1]).queryByText("28 шт.")).toBeNull();
     expect(table.textContent).not.toContain("999");
     expect(
       screen
@@ -440,6 +446,7 @@ describe("Плотная таблица складских предложени�
     expect(rows[0].slice(1)).toEqual(["Нет предложений", "—", "Нет в наличии"]);
     // Устаревшая цена детали не подставляется вместо отсутствующей цены склада.
     expect(table.textContent).not.toMatch(/4\s?567/);
+    expect(within(table).queryByText(/₽/)).toBeNull();
     expect(
       screen
         .getAllByRole("status")

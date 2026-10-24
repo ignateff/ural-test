@@ -22,53 +22,43 @@ export default function useOffersWindow(offers) {
   useLayoutEffect(() => {
     const body = bodyRef.current;
     if (!body || !active) return;
-    let previousWidth, previousFont;
+    let width, font;
     const update = () => {
-      const width = body.getBoundingClientRect().width;
-      const font = getComputedStyle(document.documentElement).fontSize;
-      setOrigin(body.getBoundingClientRect().top + window.scrollY);
-      if (previousWidth !== width || previousFont !== font) {
-        previousWidth = width;
-        previousFont = font;
+      const rect = body.getBoundingClientRect();
+      const nextFont = getComputedStyle(document.documentElement).fontSize;
+      const nextOrigin = rect.top + window.scrollY;
+      setOrigin((current) => (current === nextOrigin ? current : nextOrigin));
+      if (rect.width !== width || nextFont !== font) {
+        width = rect.width;
+        font = nextFont;
         virtualizer.measure();
       }
     };
+    // Корень документа покрывает всё, от чего зависят ширина строк и начало
+    // списка: саму ширину (ресайз окна, появление скроллбара) и высоту контента
+    // (элементы выше таблицы подвинулись). Высоты отрисованных строк и видимый
+    // диапазон при ресайзе библиотека пересчитывает сама.
     const observer = new ResizeObserver(update);
-    // Изменения элементов выше списка меняют его начало, но не размеры строк.
-    observer.observe(body.parentElement.closest(".results-panel"));
     observer.observe(document.documentElement);
-    const mutation = new MutationObserver(update);
-    mutation.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["style", "class"],
-    });
-    window.addEventListener("resize", update);
     const fontsChanged = () => {
-      virtualizer.measure();
+      width = font = undefined;
       update();
     };
     document.fonts?.addEventListener("loadingdone", fontsChanged);
     update();
     return () => {
       observer.disconnect();
-      mutation.disconnect();
-      window.removeEventListener("resize", update);
       document.fonts?.removeEventListener("loadingdone", fontsChanged);
     };
   }, [active, virtualizer]);
+  const measuredOffers = useRef(offers);
   useLayoutEffect(() => {
-    if (!active) return;
+    if (!active || measuredOffers.current === offers) return;
+    measuredOffers.current = offers;
+    // Новый набор предложений может изменить высоты строк: сбрасываем кэш
+    // измерений, чтобы спейсеры считались от актуальных оценок. Начало списка
+    // под закреплённой панелью восстанавливает OffersPanel.
     virtualizer.measure();
-    const panel = bodyRef.current?.closest(".results-panel");
-    const searchHeight =
-      parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--search-height")) ||
-      0;
-    if (panel && panel.getBoundingClientRect().top < searchHeight) {
-      virtualizer.scrollToOffset(
-        Math.max(0, window.scrollY + panel.getBoundingClientRect().top - searchHeight),
-        { behavior: "auto" },
-      );
-    }
   }, [offers, active, virtualizer]);
   const items = active
     ? virtualizer.getVirtualItems()
