@@ -54,11 +54,11 @@ export async function expectAccessible() {
 
 // Действия через тот же публичный интерфейс, что и у пользователя.
 export async function openOfferFilters(user) {
-  if (!screen.queryByRole('dialog', { name: 'Фильтры' })) {
-    await user.click(screen.getByRole('button', { name: /^Настроить фильтры/ }));
+  if (!screen.queryByRole("dialog", { name: "Фильтры" })) {
+    await user.click(screen.getByRole("button", { name: /^Настроить фильтры/ }));
   }
 }
 export async function closeOfferFilters(user) {
-  const close = screen.queryByRole('button', { name: 'Закрыть фильтры' });
+  const close = screen.queryByRole("button", { name: "Закрыть фильтры" });
   if (close) await user.click(close);
 }

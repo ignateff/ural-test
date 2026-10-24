@@ -1,21 +1,13 @@
 import { emptyFilters, availableFilterValues } from "./offerFilters";
-import {
-  configureStore,
-  createAsyncThunk,
-  createSlice,
-} from "@reduxjs/toolkit";
+import { configureStore, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getBrands, getOffers, searchParts } from "./api";
 import { readSearchFromUrl, readSortFromUrl, readFiltersFromUrl } from "./urlState";
 
-export const loadBrands = createAsyncThunk(
-  "search/brands",
-  async (number, { signal }) =>
-    getBrands(await searchParts({ number, signal })),
+export const loadBrands = createAsyncThunk("search/brands", async (number, { signal }) =>
+  getBrands(await searchParts({ number, signal })),
 );
-export const loadOffers = createAsyncThunk(
-  "search/offers",
-  async ({ number, brand }, { signal }) =>
-    getOffers(await searchParts({ number, brand, signal })),
+export const loadOffers = createAsyncThunk("search/offers", async ({ number, brand }, { signal }) =>
+  getOffers(await searchParts({ number, brand, signal })),
 );
 
 const initialState = {
@@ -38,11 +30,18 @@ const slice = createSlice({
   name: "search",
   initialState,
   reducers: {
-    numberChanged: (state, action) => ({ ...initialState, number: action.payload, sort: state.sort, order: state.order }),
+    numberChanged: (state, action) => ({
+      ...initialState,
+      number: action.payload,
+      sort: state.sort,
+      order: state.order,
+    }),
     filtersChanged(state, action) {
       Object.assign(state.filters, action.payload);
     },
-    filtersReset(state) { state.filters = emptyFilters; },
+    filtersReset(state) {
+      state.filters = emptyFilters;
+    },
     sortChanged(state, action) {
       state.sort = action.payload.sort;
       state.order = action.payload.order;
@@ -83,8 +82,10 @@ const slice = createSlice({
         state.offers = action.payload;
         // Ссылку можно проверить лишь после успешной загрузки полного подбора.
         const available = availableFilterValues(action.payload);
-        state.filters.wh = (state.filters.wh || []).filter(value => available.wh.includes(value));
-        state.filters.brands = (state.filters.brands || []).filter(value => available.brands.includes(value));
+        state.filters.wh = (state.filters.wh || []).filter((value) => available.wh.includes(value));
+        state.filters.brands = (state.filters.brands || []).filter((value) =>
+          available.brands.includes(value),
+        );
         state.offersStatus = "success";
       })
       .addCase(loadOffers.rejected, (state, action) => {
@@ -95,19 +96,23 @@ const slice = createSlice({
   },
 });
 
-export const { numberChanged, brandSelected, sortChanged, filtersChanged, filtersReset } = slice.actions;
+export const { numberChanged, brandSelected, sortChanged, filtersChanged, filtersReset } =
+  slice.actions;
 export const searchReducer = slice.reducer;
 
 // Подбор из адреса становится начальным состоянием: ссылку можно открыть заново.
 // Фабрика нужна тестам, чтобы проверить это с адресом текущего окна; без DOM
 // (Node-проверки) начальный подбор пуст.
-export function createAppStore(
-  searchFromUrl = readSearchFromUrl(globalThis.window?.location),
-) {
+export function createAppStore(searchFromUrl = readSearchFromUrl(globalThis.window?.location)) {
   return configureStore({
     reducer: { search: searchReducer },
     preloadedState: {
-      search: { ...initialState, filters: readFiltersFromUrl(globalThis.window?.location), ...readSortFromUrl(globalThis.window?.location), ...searchFromUrl },
+      search: {
+        ...initialState,
+        filters: readFiltersFromUrl(globalThis.window?.location),
+        ...readSortFromUrl(globalThis.window?.location),
+        ...searchFromUrl,
+      },
     },
   });
 }

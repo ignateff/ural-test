@@ -54,10 +54,7 @@ async function searchForAsam() {
   stubFetch(brandsResponse, { goods: fixture });
   const user = userEvent.setup();
   renderApp();
-  await user.type(
-    screen.getByRole("textbox", { name: "Артикул детали" }),
-    "01089",
-  );
+  await user.type(screen.getByRole("textbox", { name: "Артикул детали" }), "01089");
   await screen.findByRole("option", { name: "ASAM" });
   await user.selectOptions(
     screen.getByRole("combobox", { name: "Производитель искомой детали" }),
@@ -116,9 +113,7 @@ describe("Мобильные карточки складских предлож�
     expect(within(row).getByText("MEYLE")).toBeVisible();
     expect(within(row).getByText("01089-ANALOGUE-LONG-ARTICLE")).toBeVisible();
     expect(
-      within(row).getByText(
-        "Аналог фильтра топливного с очень длинным наименованием",
-      ),
+      within(row).getByText("Аналог фильтра топливного с очень длинным наименованием"),
     ).toBeVisible();
     expect(within(row).getByText("Аналог")).toBeVisible();
     expect(within(row).getByText(money("74,10"))).toBeVisible();

@@ -23,13 +23,12 @@ describe("Доступность поиска", () => {
   it("проверяет стартовый экран axe и связывает поле с подписью и подсказкой", async () => {
     renderApp();
     const input = screen.getByRole("textbox", { name: "Артикул детали" });
-    expect(input).toHaveAccessibleDescription(
-      "Поиск начнётся автоматически после ввода.",
-    );
+    expect(input).toHaveAccessibleDescription("Поиск начнётся автоматически после ввода.");
     expect(screen.getByRole("main")).toHaveAttribute("id", "main-content");
-    expect(
-      screen.getByRole("link", { name: "К основному содержимому" }),
-    ).toHaveAttribute("href", "#main-content");
+    expect(screen.getByRole("link", { name: "К основному содержимому" })).toHaveAttribute(
+      "href",
+      "#main-content",
+    );
     expect(screen.getByRole("combobox")).toBeDisabled();
     await expectAccessible();
   });
@@ -40,14 +39,10 @@ describe("Доступность поиска", () => {
     renderApp();
 
     await user.tab();
-    expect(
-      screen.getByRole("link", { name: "К основному содержимому" }),
-    ).toHaveFocus();
+    expect(screen.getByRole("link", { name: "К основному содержимому" })).toHaveFocus();
     await user.tab(); // Логотип.
     await user.tab();
-    expect(
-      screen.getByRole("textbox", { name: "Артикул детали" }),
-    ).toHaveFocus();
+    expect(screen.getByRole("textbox", { name: "Артикул детали" })).toHaveFocus();
     await user.keyboard("01089");
     await screen.findByRole("option", { name: "ASAM" });
     const brand = screen.getByRole("combobox", { name: "Производитель искомой детали" });
@@ -69,20 +64,14 @@ describe("Доступность поиска", () => {
         .getAllByRole("columnheader")
         .map((cell) => cell.textContent),
     ).toEqual(["Деталь / производитель", "Склад", "Цена", "Остаток"]);
-    expect(
-      within(table).getByRole("cell", { name: "28 шт." }),
-    ).toBeInTheDocument();
+    expect(within(table).getByRole("cell", { name: "28 шт." })).toBeInTheDocument();
     expect(
       screen
         .getAllByRole("status")
-        .some((node) =>
-          node.textContent.includes("Поиск завершён. Строк в таблице: 1."),
-        ),
+        .some((node) => node.textContent.includes("Поиск завершён. Строк в таблице: 1.")),
     ).toBe(true);
     // Обновление не заставляет скринридер читать всю таблицу как live region.
-    expect(
-      table.closest("[aria-live], [role='status'], [role='alert']"),
-    ).toBeNull();
+    expect(table.closest("[aria-live], [role='status'], [role='alert']")).toBeNull();
     const url = new URL(fetch.mock.calls[1][0]);
     expect(url.searchParams.get("brand")).toBe("ASAM");
     expect(url.searchParams.get("analogues")).toBe("on");
@@ -104,7 +93,12 @@ describe("Доступность поиска", () => {
   });
 
   it("меняет производителя с сохранением артикула и сбрасывает подбор при новом артикуле", async () => {
-    const fetch = stubFetch({ goods: [...goods, { ...goods[0], brand: "FEBI" }] }, { goods }, { goods: [{ ...goods[0], brand: "FEBI" }] }, { goods: [] });
+    const fetch = stubFetch(
+      { goods: [...goods, { ...goods[0], brand: "FEBI" }] },
+      { goods },
+      { goods: [{ ...goods[0], brand: "FEBI" }] },
+      { goods: [] },
+    );
     const user = userEvent.setup();
     renderApp();
     const input = screen.getByRole("textbox", { name: "Артикул детали" });
@@ -129,9 +123,18 @@ describe("Доступность поиска", () => {
 
   it("не возвращает производителей из устаревшего ответа после смены артикула", async () => {
     let resolveOld;
-    const fetch = vi.fn()
-      .mockImplementationOnce(() => new Promise((resolve) => { resolveOld = resolve; }))
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ goods: [{ ...goods[0], brand: "FEBI" }] }) });
+    const fetch = vi
+      .fn()
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            resolveOld = resolve;
+          }),
+      )
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ goods: [{ ...goods[0], brand: "FEBI" }] }),
+      });
     vi.stubGlobal("fetch", fetch);
     const user = userEvent.setup();
     renderApp();
@@ -143,7 +146,9 @@ describe("Доступность поиска", () => {
     await user.type(input, "1");
     expect(fetch.mock.calls[0][1].signal.aborted).toBe(true);
     await screen.findByRole("option", { name: "FEBI" });
-    await act(async () => { resolveOld({ ok: true, json: async () => ({ goods }) }); });
+    await act(async () => {
+      resolveOld({ ok: true, json: async () => ({ goods }) });
+    });
     expect(screen.queryByRole("option", { name: "ASAM" })).not.toBeInTheDocument();
     expect(screen.getByRole("combobox")).toBeEnabled();
     expect(input).toHaveValue("010891");
@@ -154,9 +159,22 @@ describe("Доступность поиска", () => {
     let resolveOld;
     let resolveAfterClear;
     const fetch = stubFetch({ goods: [...goods, { ...goods[0], brand: "FEBI" }] });
-    fetch.mockImplementationOnce(() => new Promise((resolve) => { resolveOld = resolve; }));
-    fetch.mockResolvedValueOnce({ ok: true, json: async () => ({ goods: [{ ...goods[0], brand: "FEBI", name: "Актуальная деталь" }] }) });
-    fetch.mockImplementationOnce(() => new Promise((resolve) => { resolveAfterClear = resolve; }));
+    fetch.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveOld = resolve;
+        }),
+    );
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ goods: [{ ...goods[0], brand: "FEBI", name: "Актуальная деталь" }] }),
+    });
+    fetch.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveAfterClear = resolve;
+        }),
+    );
     const user = userEvent.setup();
     renderApp();
     const input = screen.getByRole("textbox", { name: "Артикул детали" });
@@ -167,7 +185,9 @@ describe("Доступность поиска", () => {
     await screen.findByText("Загружаем предложения и аналоги…");
     await user.selectOptions(selector, "FEBI");
     await screen.findByRole("cell", { name: /Актуальная деталь/ });
-    await act(async () => { resolveOld({ ok: true, json: async () => ({ goods }) }); });
+    await act(async () => {
+      resolveOld({ ok: true, json: async () => ({ goods }) });
+    });
     expect(screen.queryByRole("cell", { name: /Фильтр топливный/ })).not.toBeInTheDocument();
     expect(selector).toHaveValue("FEBI");
     expect(selector).toHaveFocus();
@@ -175,7 +195,9 @@ describe("Доступность поиска", () => {
     await user.selectOptions(selector, "ASAM");
     await screen.findByText("Загружаем предложения и аналоги…");
     await user.click(screen.getByRole("button", { name: "Очистить артикул" }));
-    await act(async () => { resolveAfterClear({ ok: true, json: async () => ({ goods }) }); });
+    await act(async () => {
+      resolveAfterClear({ ok: true, json: async () => ({ goods }) });
+    });
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
     expect(selector).toBeDisabled();
     expect(selector).toHaveValue("");
@@ -193,15 +215,11 @@ describe("Доступность поиска", () => {
     const input = screen.getByRole("textbox", { name: "Артикул детали" });
     await user.keyboard("01089");
     await user.tab();
-    expect(
-      screen.getByRole("button", { name: "Очистить артикул" }),
-    ).toHaveFocus();
+    expect(screen.getByRole("button", { name: "Очистить артикул" })).toHaveFocus();
     await user.keyboard(" ");
     expect(input).toHaveValue("");
     expect(input).toHaveFocus();
-    expect(
-      screen.queryByRole("button", { name: "Очистить артикул" }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Очистить артикул" })).not.toBeInTheDocument();
   });
 
   it("объявляет загрузку и пустой результат производителей", async () => {
@@ -224,14 +242,9 @@ describe("Доступность поиска", () => {
     );
     await expectAccessible();
     resolveRequest({ ok: true, json: async () => ({ goods: [{}] }) });
-    const message =
-      "По артикулу «01089» ничего не найдено. Проверьте номер детали.";
+    const message = "По артикулу «01089» ничего не найдено. Проверьте номер детали.";
     await screen.findAllByText(message);
-    expect(
-      screen
-        .getAllByRole("status")
-        .some((node) => node.textContent === message),
-    ).toBe(true);
+    expect(screen.getAllByRole("status").some((node) => node.textContent === message)).toBe(true);
     await expectAccessible();
   });
 
@@ -256,9 +269,7 @@ describe("Доступность поиска", () => {
     await user.tab();
     expect(screen.getByRole("button", { name: "Повторить" })).toHaveFocus();
     await user.keyboard("{Enter}");
-    expect(
-      await screen.findByRole("option", { name: "ASAM" }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "ASAM" })).toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
@@ -289,10 +300,7 @@ describe("Доступность поиска", () => {
     expect(brandsRegion).toHaveAttribute("aria-busy", "false");
     expect(offersRegion).toHaveAttribute("aria-busy", "false");
 
-    await user.type(
-      screen.getByRole("textbox", { name: "Артикул детали" }),
-      "01089",
-    );
+    await user.type(screen.getByRole("textbox", { name: "Артикул детали" }), "01089");
     await screen.findByText("Ищем производителей…", { selector: "p" });
     expect(brandsRegion).toHaveAttribute("aria-busy", "true");
 
@@ -331,9 +339,10 @@ describe("Доступность поиска", () => {
     await user.click(screen.getByRole("button", { name: "01089" }));
     await screen.findByRole("option", { name: "ASAM" });
     await user.selectOptions(screen.getByRole("combobox"), "ASAM");
-    expect(
-      await screen.findByText("Загружаем предложения и аналоги…"),
-    ).toHaveAttribute("role", "status");
+    expect(await screen.findByText("Загружаем предложения и аналоги…")).toHaveAttribute(
+      "role",
+      "status",
+    );
     await expectAccessible();
     rejectOffers(new TypeError("Failed to fetch"));
     expect(await screen.findByRole("alert")).toHaveTextContent(
@@ -345,11 +354,7 @@ describe("Доступность поиска", () => {
     await user.keyboard("{Enter}");
     const message = "Для выбранного производителя предложения не найдены.";
     await screen.findAllByText(message);
-    expect(
-      screen
-        .getAllByRole("status")
-        .some((node) => node.textContent === message),
-    ).toBe(true);
+    expect(screen.getAllByRole("status").some((node) => node.textContent === message)).toBe(true);
     await expectAccessible();
   });
 });
@@ -371,9 +376,7 @@ function rowTexts(table) {
     .getAllByRole("row")
     .map((row) => within(row).queryAllByRole("cell"))
     .filter((cells) => cells.length)
-    .map((cells) =>
-      cells.map((cell) => cell.textContent.replace(/\s+/g, " ").trim()),
-    );
+    .map((cells) => cells.map((cell) => cell.textContent.replace(/\s+/g, " ").trim()));
 }
 
 describe("Плотная таблица складских предложений", () => {
@@ -381,9 +384,7 @@ describe("Плотная таблица складских предложени�
     const user = userEvent.setup();
     const table = await showOffers(user, goods);
     const [identity] = within(table).getAllByRole("cell");
-    expect(identity).toHaveAccessibleName(
-      "ASAM 01089 Искомая деталь Фильтр топливный",
-    );
+    expect(identity).toHaveAccessibleName("ASAM 01089 Искомая деталь Фильтр топливный");
   });
 
   it("показывает одну деталь на нескольких складах независимыми строками с ценой и остатком склада", async () => {
@@ -417,9 +418,7 @@ describe("Плотная таблица складских предложени�
         .getAllByRole("status")
         .some((node) => node.textContent === "Поиск завершён. Строк в таблице: 2."),
     ).toBe(true);
-    expect(
-      table.closest("[aria-live], [role='status'], [role='alert']"),
-    ).toBeNull();
+    expect(table.closest("[aria-live], [role='status'], [role='alert']")).toBeNull();
     await expectAccessible();
   });
 
@@ -506,8 +505,6 @@ describe("Плотная таблица складских предложени�
         .getAllByRole("status")
         .some((node) => node.textContent === "Поиск завершён. Строк в таблице: 120."),
     ).toBe(true);
-    expect(
-      screen.queryByRole("button", { name: /ещё|следующ|показать/i }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /ещё|следующ|показать/i })).not.toBeInTheDocument();
   });
 });

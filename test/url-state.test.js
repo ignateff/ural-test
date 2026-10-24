@@ -1,23 +1,18 @@
 import { describe, expect, it, vi } from "vitest";
-import {
-  buildSearchUrl,
-  readSearchFromUrl,
-  writeSearchToUrl,
-} from "../src/urlState";
+import { buildSearchUrl, readSearchFromUrl, writeSearchToUrl } from "../src/urlState";
 
 const at = (href) => new URL(href);
 
 describe("Чтение подбора из адреса", () => {
   it("читает артикул и производителя и обрезает пробелы", () => {
-    expect(
-      readSearchFromUrl(at("https://app.test/?number=%2001089%20&brand=ASAM%20")),
-    ).toEqual({ number: "01089", brand: "ASAM" });
+    expect(readSearchFromUrl(at("https://app.test/?number=%2001089%20&brand=ASAM%20"))).toEqual({
+      number: "01089",
+      brand: "ASAM",
+    });
   });
 
   it("декодирует кириллицу, пробелы и спецсимволы", () => {
-    const url = at(
-      "https://app.test/?number=A%20B%261&brand=%D0%9C%D0%B5%D0%B9%D0%BB%D0%B5",
-    );
+    const url = at("https://app.test/?number=A%20B%261&brand=%D0%9C%D0%B5%D0%B9%D0%BB%D0%B5");
     expect(readSearchFromUrl(url)).toEqual({
       number: "A B&1",
       brand: "Мейле",
@@ -52,10 +47,7 @@ describe("Сборка адреса подбора", () => {
   });
 
   it("кодирует пробелы и кириллицу", () => {
-    const href = buildSearchUrl(
-      { number: "A B&1", brand: "Мейле" },
-      at("https://app.test/"),
-    );
+    const href = buildSearchUrl({ number: "A B&1", brand: "Мейле" }, at("https://app.test/"));
     const params = new URL(`https://app.test${href}`).searchParams;
     expect(params.get("number")).toBe("A B&1");
     expect(params.get("brand")).toBe("Мейле");

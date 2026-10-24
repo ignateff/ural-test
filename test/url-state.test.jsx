@@ -2,12 +2,7 @@
 // Артикул и производитель искомой детали как состояние адреса: ссылка открывает
 // тот же подбор, а ввод и смена производителя обновляют адрес без перезагрузки.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  cleanup,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createAppStore } from "../src/store";
 import { readSearchFromUrl } from "../src/urlState";
@@ -30,8 +25,7 @@ const brands = {
   ],
 };
 
-const currentParams = () =>
-  new URL(window.location.href).searchParams;
+const currentParams = () => new URL(window.location.href).searchParams;
 
 // Открывает приложение по адресу: адрес выставляется, подбор читается так же,
 // как это делает singleton-store при загрузке страницы.
@@ -81,10 +75,7 @@ describe("Адрес как состояние подбора", () => {
     const user = userEvent.setup();
     renderApp();
 
-    await user.type(
-      screen.getByRole("textbox", { name: "Артикул детали" }),
-      "01089",
-    );
+    await user.type(screen.getByRole("textbox", { name: "Артикул детали" }), "01089");
     await waitFor(() => expect(currentParams().get("number")).toBe("01089"));
 
     await user.click(screen.getByRole("button", { name: "Очистить артикул" }));
@@ -96,10 +87,7 @@ describe("Адрес как состояние подбора", () => {
     const user = userEvent.setup();
     renderApp();
 
-    await user.type(
-      screen.getByRole("textbox", { name: "Артикул детали" }),
-      "01089",
-    );
+    await user.type(screen.getByRole("textbox", { name: "Артикул детали" }), "01089");
     await screen.findByRole("option", { name: "ASAM" });
     const selector = screen.getByRole("combobox", {
       name: "Производитель искомой детали",
@@ -120,24 +108,15 @@ describe("Адрес как состояние подбора", () => {
     const user = userEvent.setup();
     renderApp();
 
-    await user.type(
-      screen.getByRole("textbox", { name: "Артикул детали" }),
-      "A B&1",
-    );
-    await waitFor(() =>
-      expect(currentParams().get("number")).toBe("A B&1"),
-    );
+    await user.type(screen.getByRole("textbox", { name: "Артикул детали" }), "A B&1");
+    await waitFor(() => expect(currentParams().get("number")).toBe("A B&1"));
   });
 
   it("игнорирует производителя в ссылке без артикула и убирает его из адреса", async () => {
     renderFromUrl("/?brand=ASAM");
 
-    expect(
-      screen.getByRole("textbox", { name: "Артикул детали" }),
-    ).toHaveValue("");
-    expect(
-      screen.getByRole("combobox", { name: "Производитель искомой детали" }),
-    ).toBeDisabled();
+    expect(screen.getByRole("textbox", { name: "Артикул детали" })).toHaveValue("");
+    expect(screen.getByRole("combobox", { name: "Производитель искомой детали" })).toBeDisabled();
     await waitFor(() => expect(currentParams().toString()).toBe(""));
   });
 
@@ -158,9 +137,7 @@ describe("Адрес как состояние подбора", () => {
     expect(selector).toHaveValue("НЕИЗВЕСТНЫЙ");
     expect(currentParams().get("number")).toBe("01089");
     expect(currentParams().get("brand")).toBe("НЕИЗВЕСТНЫЙ");
-    expect(new URL(fetch.mock.calls[0][0]).searchParams.get("brand")).toBe(
-      "НЕИЗВЕСТНЫЙ",
-    );
+    expect(new URL(fetch.mock.calls[0][0]).searchParams.get("brand")).toBe("НЕИЗВЕСТНЫЙ");
 
     // Пользователь может заменить бренд на найденный — адрес обновляется.
     await user.selectOptions(selector, "ASAM");

@@ -12,7 +12,9 @@ const EMPTY_SEARCH = { number: "", brand: "" };
 // Обрезает пробелы и ограничивает длину: значения приходят из адреса, который
 // пользователь может изменить вручную.
 function sanitize(value, maxLength) {
-  return String(value ?? "").trim().slice(0, maxLength);
+  return String(value ?? "")
+    .trim()
+    .slice(0, maxLength);
 }
 
 // Производитель без артикула не образует подбор: по одному бренду поставщик
@@ -39,7 +41,14 @@ export function readSortFromUrl(location) {
 
 export function readFiltersFromUrl(location) {
   const params = location ? new URL(location.href).searchParams : new URLSearchParams();
-  return { wh: [...new Set(params.getAll("wh"))], brands: [...new Set(params.getAll("brands"))], stock: normalizeStock(params.get("stock")), kind: normalizeKind(params.get("kind")), priceFrom: normalizePrice(params.get("priceFrom")), priceTo: normalizePrice(params.get("priceTo")) };
+  return {
+    wh: [...new Set(params.getAll("wh"))],
+    brands: [...new Set(params.getAll("brands"))],
+    stock: normalizeStock(params.get("stock")),
+    kind: normalizeKind(params.get("kind")),
+    priceFrom: normalizePrice(params.get("priceFrom")),
+    priceTo: normalizePrice(params.get("priceTo")),
+  };
 }
 
 export function buildSearchUrl({ number, brand, sort, order, filters } = {}, location) {

@@ -1,12 +1,6 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
 import { getBrands, getOffers, searchParts } from "../src/api";
-import {
-  searchReducer,
-  numberChanged,
-  brandSelected,
-  loadBrands,
-  loadOffers,
-} from "../src/store";
+import { searchReducer, numberChanged, brandSelected, loadBrands, loadOffers } from "../src/store";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -22,23 +16,17 @@ describe("Ответ поставщика", () => {
           { id: "w1", price: 10, stock: 0 },
           { id: "w2", price: 20, stock: 4 },
         ],
-        analogues: [
-          { goodsID: "b", brand: "MEYLE", number: "2", warehouses: [] },
-        ],
+        analogues: [{ goodsID: "b", brand: "MEYLE", number: "2", warehouses: [] }],
       },
     ]);
-    expect(
-      rows.map(({ price, stock, analogue }) => ({ price, stock, analogue })),
-    ).toEqual([
+    expect(rows.map(({ price, stock, analogue }) => ({ price, stock, analogue }))).toEqual([
       { price: 10, stock: 0, analogue: false },
       { price: 20, stock: 4, analogue: false },
       { price: null, stock: 0, analogue: true },
     ]);
   });
   it("не дублирует бренды и складские предложения", () => {
-    expect(getBrands([{ brand: "A" }, { brand: "A" }, { brand: "B" }])).toEqual(
-      ["A", "B"],
-    );
+    expect(getBrands([{ brand: "A" }, { brand: "A" }, { brand: "B" }])).toEqual(["A", "B"]);
     const part = {
       goodsID: "a",
       brand: "A",
@@ -50,16 +38,12 @@ describe("Ответ поставщика", () => {
   it("считает пустую структуру отсутствием результата", async () => {
     vi.stubGlobal(
       "fetch",
-      vi
-        .fn()
-        .mockResolvedValue({ ok: true, json: async () => ({ goods: [{}] }) }),
+      vi.fn().mockResolvedValue({ ok: true, json: async () => ({ goods: [{}] }) }),
     );
     expect(await searchParts({ number: "1" })).toEqual([]);
   });
   it("кодирует спецсимволы номера и бренда", async () => {
-    const fetch = vi
-      .fn()
-      .mockResolvedValue({ ok: true, json: async () => ({ goods: [] }) });
+    const fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ goods: [] }) });
     vi.stubGlobal("fetch", fetch);
     await searchParts({ number: "#1 &2", brand: "Meat & Doria" });
     const url = new URL(fetch.mock.calls[0][0], "http://localhost");
@@ -78,22 +62,15 @@ describe("Ответ поставщика", () => {
         json: async () => ({ error: "Лимит запросов" }),
       }),
     );
-    await expect(searchParts({ number: "1" })).rejects.toThrow(
-      "Лимит запросов",
-    );
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) }),
-    );
+    await expect(searchParts({ number: "1" })).rejects.toThrow("Лимит запросов");
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) }));
     await expect(searchParts({ number: "1" })).rejects.toThrow("формат");
   });
 });
 
 describe("Прямые запросы к API", () => {
   it("запрашивает бренды без параметров второго этапа", async () => {
-    const fetch = vi
-      .fn()
-      .mockResolvedValue({ ok: true, json: async () => ({ goods: [] }) });
+    const fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ goods: [] }) });
     vi.stubGlobal("fetch", fetch);
     await searchParts({ number: "01089" });
     const url = new URL(fetch.mock.calls[0][0]);
@@ -103,29 +80,17 @@ describe("Прямые запросы к API", () => {
   it("переводит ошибки поставщика даже при HTTP 200", async () => {
     vi.stubGlobal(
       "fetch",
-      vi
-        .fn()
-        .mockResolvedValue({
-          ok: true,
-          json: async () => ({ error: "Invalid key client!" }),
-        }),
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ error: "Invalid key client!" }),
+      }),
     );
-    await expect(searchParts({ number: "1" })).rejects.toThrow(
-      "Ключ доступа к API недействителен",
-    );
+    await expect(searchParts({ number: "1" })).rejects.toThrow("Ключ доступа к API недействителен");
   });
   it("объясняет сетевую ошибку и превышение времени ожидания", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new TypeError("Failed to fetch")),
-    );
-    await expect(searchParts({ number: "1" })).rejects.toThrow(
-      "Проверьте подключение",
-    );
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new DOMException("timeout", "TimeoutError")),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("Failed to fetch")));
+    await expect(searchParts({ number: "1" })).rejects.toThrow("Проверьте подключение");
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new DOMException("timeout", "TimeoutError")));
     await expect(searchParts({ number: "1" })).rejects.toThrow("20 секунд");
   });
   it("передаёт отмену запроса в fetch", async () => {
@@ -136,9 +101,9 @@ describe("Прямые запросы к API", () => {
     });
     vi.stubGlobal("fetch", fetch);
     controller.abort();
-    await expect(
-      searchParts({ number: "1", signal: controller.signal }),
-    ).rejects.toMatchObject({ name: "AbortError" });
+    await expect(searchParts({ number: "1", signal: controller.signal })).rejects.toMatchObject({
+      name: "AbortError",
+    });
   });
 });
 
@@ -154,10 +119,7 @@ describe("Защита от устаревших запросов", () => {
   });
   it("сбрасывает предложения при смене бренда и игнорирует старый ответ", () => {
     let state = searchReducer(undefined, brandSelected("A"));
-    state = searchReducer(
-      state,
-      loadOffers.pending("old", { number: "1", brand: "A" }),
-    );
+    state = searchReducer(state, loadOffers.pending("old", { number: "1", brand: "A" }));
     state = searchReducer(state, brandSelected("B"));
     state = searchReducer(
       state,

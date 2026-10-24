@@ -1,7 +1,5 @@
 const API_URL = "https://api.favorit-parts.ru/hs/hsprice/";
-const API_KEY =
-  import.meta.env.VITE_FAVORIT_API_KEY ||
-  "00000000-0000-0000-0000-000000000001";
+const API_KEY = import.meta.env.VITE_FAVORIT_API_KEY || "00000000-0000-0000-0000-000000000001";
 const API_ERRORS = {
   "Empty key!": "Не указан ключ доступа к API.",
   "Invalid key client!": "Ключ доступа к API недействителен.",
@@ -20,18 +18,14 @@ export async function searchParts({ number, brand, signal }) {
   let response;
   try {
     response = await fetch(url.toString(), {
-      signal: AbortSignal.any(
-        [signal, AbortSignal.timeout(20000)].filter(Boolean),
-      ),
+      signal: AbortSignal.any([signal, AbortSignal.timeout(20000)].filter(Boolean)),
     });
   } catch (error) {
     if (error.name === "AbortError") throw error;
     if (error.name === "TimeoutError") {
       throw new Error("Поставщик не ответил за 20 секунд. Повторите поиск.");
     }
-    throw new Error(
-      "Не удалось связаться с поставщиком. Проверьте подключение и повторите поиск.",
-    );
+    throw new Error("Не удалось связаться с поставщиком. Проверьте подключение и повторите поиск.");
   }
 
   let data;
@@ -61,9 +55,7 @@ export async function searchParts({ number, brand, signal }) {
 }
 
 export function getBrands(goods) {
-  return [...new Set(goods.map((item) => item.brand))].sort((a, b) =>
-    a.localeCompare(b),
-  );
+  return [...new Set(goods.map((item) => item.brand))].sort((a, b) => a.localeCompare(b));
 }
 
 // Каждая строка — предложение конкретного склада, а не устаревшая цена товара.
@@ -82,9 +74,7 @@ export function getOffers(goods) {
           brand: item.brand,
           number: item.number,
           name: item.name || "Без наименования",
-          warehouse:
-            warehouse?.code ||
-            (warehouse ? "Склад поставщика" : "Нет предложений"),
+          warehouse: warehouse?.code || (warehouse ? "Склад поставщика" : "Нет предложений"),
           price: warehouse?.price ?? null,
           stock: warehouse?.stock ?? 0,
           analogue: previous ? previous.analogue && analogue : analogue,

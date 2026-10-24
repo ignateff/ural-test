@@ -17,9 +17,7 @@ function measurePanel(panel) {
 
 export default function SearchPanel() {
   const dispatch = useDispatch();
-  const { number, brand, brands, brandsStatus, brandsError } = useSelector(
-    (state) => state.search,
-  );
+  const { number, brand, brands, brandsStatus, brandsError } = useSelector((state) => state.search);
   const [retryCount, setRetryCount] = useState(0);
   const inputRef = useRef(null);
   const panelRef = useRef(null);
@@ -59,84 +57,98 @@ export default function SearchPanel() {
       aria-labelledby="search-heading"
       aria-busy={brandsStatus === "loading"}
     >
-      <h2 id="search-heading" className="visually-hidden">Подбор детали</h2>
-      <div className="search-fields"><div>
-      <label htmlFor="part-number" className="form-label">
-        Артикул детали
-      </label>
-      <div className="input-group">
-        <span className="input-group-text" aria-hidden="true">
-          ⌕
-        </span>
-        <input
-          ref={inputRef}
-          id="part-number"
-          name="part-number"
-          className="form-control"
-          placeholder="Например, 01089"
-          maxLength={NUMBER_MAX_LENGTH}
-          autoComplete="off"
-          spellCheck="false"
-          aria-describedby="search-help"
-          value={number}
-          onChange={(event) => dispatch(numberChanged(event.target.value))}
-        />
-        {number && (
-          <button
-            className="btn clear-button"
-            onClick={clearNumber}
-            aria-label="Очистить артикул"
+      <h2 id="search-heading" className="visually-hidden">
+        Подбор детали
+      </h2>
+      <div className="search-fields">
+        <div>
+          <label htmlFor="part-number" className="form-label">
+            Артикул детали
+          </label>
+          <div className="input-group">
+            <span className="input-group-text" aria-hidden="true">
+              ⌕
+            </span>
+            <input
+              ref={inputRef}
+              id="part-number"
+              name="part-number"
+              className="form-control"
+              placeholder="Например, 01089"
+              maxLength={NUMBER_MAX_LENGTH}
+              autoComplete="off"
+              spellCheck="false"
+              aria-describedby="search-help"
+              value={number}
+              onChange={(event) => dispatch(numberChanged(event.target.value))}
+            />
+            {number && (
+              <button
+                className="btn clear-button"
+                onClick={clearNumber}
+                aria-label="Очистить артикул"
+              >
+                ×
+              </button>
+            )}
+          </div>
+          <p id="search-help" className="form-text">
+            Поиск начнётся автоматически после ввода.
+          </p>
+        </div>
+        <div>
+          <label htmlFor="source-brand" className="form-label">
+            Производитель искомой детали
+          </label>
+          <select
+            id="source-brand"
+            className="form-select"
+            value={brand}
+            aria-describedby={brand ? "selected-brand" : undefined}
+            disabled={brandsStatus !== "success" || !brands.length}
+            onChange={(event) => dispatch(brandSelected(event.target.value))}
           >
-            ×
-          </button>
-        )}
-      </div>
-      <p id="search-help" className="form-text">
-        Поиск начнётся автоматически после ввода.
-      </p>
-      </div><div>
-        <label htmlFor="source-brand" className="form-label">Производитель искомой детали</label>
-        <select id="source-brand" className="form-select" value={brand}
-          aria-describedby={brand ? "selected-brand" : undefined}
-          disabled={brandsStatus !== "success" || !brands.length}
-          onChange={(event) => dispatch(brandSelected(event.target.value))}>
-          <option value="" disabled>{brandsStatus === "loading" ? "Ищем производителей…" : brandsStatus === "error" ? "Ошибка поиска" : brandsStatus === "success" && !brands.length ? "Производители не найдены" : "Выберите производителя"}</option>
-          {/* Производитель из ссылки сохраняется, даже если поставщик его сейчас
+            <option value="" disabled>
+              {brandsStatus === "loading"
+                ? "Ищем производителей…"
+                : brandsStatus === "error"
+                  ? "Ошибка поиска"
+                  : brandsStatus === "success" && !brands.length
+                    ? "Производители не найдены"
+                    : "Выберите производителя"}
+            </option>
+            {/* Производитель из ссылки сохраняется, даже если поставщик его сейчас
               не вернул: иначе отправленная ссылка теряла бы выбранную деталь. */}
-          {brand && !brands.includes(brand) && (
-            <option value={brand}>{brand}</option>
+            {brand && !brands.includes(brand) && <option value={brand}>{brand}</option>}
+            {brands.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+          {brand && (
+            <p id="selected-brand" className="form-text selected-brand">
+              Выбран производитель: {brand}
+            </p>
           )}
-          {brands.map((name) => <option key={name} value={name}>{name}</option>)}
-        </select>
-        {brand && <p id="selected-brand" className="form-text selected-brand">Выбран производитель: {brand}</p>}
-      </div></div>
+        </div>
+      </div>
       {!query && (
         <p className="hint">
           Не знаете, с чего начать? Попробуйте{" "}
-          <button
-            className="example-button"
-            onClick={() => dispatch(numberChanged("01089"))}
-          >
+          <button className="example-button" onClick={() => dispatch(numberChanged("01089"))}>
             01089
           </button>{" "}
           или{" "}
-          <button
-            className="example-button"
-            onClick={() => dispatch(numberChanged("7160500039S"))}
-          >
+          <button className="example-button" onClick={() => dispatch(numberChanged("7160500039S"))}>
             7160500039S
           </button>
         </p>
       )}
-      {query && brandsStatus === "idle" && (
-        <p className="hint">Ожидаем окончания ввода…</p>
-      )}
+      {query && brandsStatus === "idle" && <p className="hint">Ожидаем окончания ввода…</p>}
       {brandsStatus === "loading" && <Loader>Ищем производителей…</Loader>}
       {brandsStatus === "error" && (
-        <ErrorMessage
-          message={brandsError}
-          retry={() => setRetryCount((value) => value + 1)}
-        />
+        <ErrorMessage message={brandsError} retry={() => setRetryCount((value) => value + 1)} />
       )}
       <StatusAnnouncer>
         {brandsStatus === "success"

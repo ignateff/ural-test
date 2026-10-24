@@ -5,3 +5,8 @@ dist/
 .DS_Store
 .openai/*.tar.gz
 .sites-runtime/
+playwright-report/
+test-results/
+
+!.github/
+!.github/**

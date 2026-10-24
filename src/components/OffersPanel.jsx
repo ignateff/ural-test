@@ -15,18 +15,25 @@ export default function OffersPanel() {
     (state) => state.search,
   );
   const filteredOffers = useMemo(() => filterOffers(offers, filters), [offers, filters]);
-  const sortedOffers = useMemo(() => sortOffers(filteredOffers, sort, order), [filteredOffers, sort, order]);
+  const sortedOffers = useMemo(
+    () => sortOffers(filteredOffers, sort, order),
+    [filteredOffers, sort, order],
+  );
   const hasFilters = activeFilterCount(filters) > 0;
   const [retryCount, setRetryCount] = useState(0);
   const query = number.trim();
   const resultsRef = useRef(null);
-  const noResultsMessage =
-    "Для выбранного производителя предложения не найдены.";
+  const noResultsMessage = "Для выбранного производителя предложения не найдены.";
   useEffect(() => {
     const panel = resultsRef.current;
-    const height = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--search-height")) || 0;
+    const height =
+      parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--search-height")) ||
+      0;
     if (panel.getBoundingClientRect().top < height) {
-      window.scrollTo({ top: window.scrollY + panel.getBoundingClientRect().top - height, behavior: "instant" });
+      window.scrollTo({
+        top: window.scrollY + panel.getBoundingClientRect().top - height,
+        behavior: "instant",
+      });
     }
   }, [number, brand, filters, sort, order]);
 
@@ -48,7 +55,6 @@ export default function OffersPanel() {
           02
         </span>
         <h2 id="results-heading">Детали и предложения</h2>
-
       </div>
       {!brand && (
         <div className="empty-results">
@@ -64,19 +70,16 @@ export default function OffersPanel() {
           {brand} <span>/</span> {query}
         </p>
       )}
-      {offersStatus === "loading" && (
-        <Loader>Загружаем предложения и аналоги…</Loader>
-      )}
+      {offersStatus === "loading" && <Loader>Загружаем предложения и аналоги…</Loader>}
       {offersStatus === "error" && (
-        <ErrorMessage
-          message={offersError}
-          retry={() => setRetryCount((value) => value + 1)}
-        />
+        <ErrorMessage message={offersError} retry={() => setRetryCount((value) => value + 1)} />
       )}
       <StatusAnnouncer>
         {offersStatus === "success"
           ? offers.length
-            ? hasFilters ? `Показано ${filteredOffers.length} из ${offers.length}.` : `Поиск завершён. Строк в таблице: ${offers.length}.`
+            ? hasFilters
+              ? `Показано ${filteredOffers.length} из ${offers.length}.`
+              : `Поиск завершён. Строк в таблице: ${offers.length}.`
             : noResultsMessage
           : ""}
       </StatusAnnouncer>
@@ -84,7 +87,11 @@ export default function OffersPanel() {
         (offers.length ? (
           <>
             <OffersFilters visibleCount={filteredOffers.length} totalCount={offers.length} />
-            {filteredOffers.length ? <OffersTable offers={sortedOffers} /> : <p className="state">Ничего не найдено по выбранным фильтрам</p>}
+            {filteredOffers.length ? (
+              <OffersTable offers={sortedOffers} />
+            ) : (
+              <p className="state">Ничего не найдено по выбранным фильтрам</p>
+            )}
           </>
         ) : (
           <p className="state">{noResultsMessage}</p>

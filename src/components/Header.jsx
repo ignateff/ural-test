@@ -6,11 +6,7 @@ export default function Header() {
       </a>
       <header className="topbar">
         <div className="container page-width d-flex justify-content-between align-items-center">
-          <a
-            className="wordmark"
-            href={import.meta.env.BASE_URL}
-            aria-label="Автоподбор — главная"
-          >
+          <a className="wordmark" href={import.meta.env.BASE_URL} aria-label="Автоподбор — главная">
             <span className="brand-icon" aria-hidden="true">
               а
             </span>

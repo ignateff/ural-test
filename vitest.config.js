@@ -5,6 +5,7 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
+      include: ["test/**/*.test.{js,jsx}"],
       setupFiles: ["./test/setup.js"],
     },
   }),

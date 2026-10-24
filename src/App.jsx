@@ -13,8 +13,7 @@ export default function App() {
         <SearchPanel />
         <OffersPanel />
         <footer>
-          Данные предоставлены Favorit Parts{" "}
-          <span>Цены и остатки актуальны на момент запроса</span>
+          Данные предоставлены Favorit Parts <span>Цены и остатки актуальны на момент запроса</span>
         </footer>
       </main>
     </>
