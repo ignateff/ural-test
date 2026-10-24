@@ -23,18 +23,18 @@
 .offer-filter-group select {
   max-width: 100%;
   padding: 6px;
-  border: 1px solid #71836f;
+  border: 1px solid var(--color-control-border);
   border-radius: 5px;
-  background: white;
+  background: var(--color-surface);
   width: 100%;
   min-height: 40px;
 }
 .filter-reset {
   padding: 6px 10px;
-  border: 1px solid #71836f;
+  border: 1px solid var(--color-control-border);
   border-radius: 5px;
-  background: #f7f9f4;
-  color: #244c31;
+  background: var(--color-page);
+  color: var(--color-primary);
 }
 .multi-filter-trigger {
   display: flex;
@@ -43,10 +43,10 @@
   gap: 12px;
   width: 100%;
   padding: 6px 10px;
-  border: 1px solid #71836f;
+  border: 1px solid var(--color-control-border);
   border-radius: 5px;
-  background: white;
-  color: #243a30;
+  background: var(--color-surface);
+  color: var(--color-text);
   text-align: left;
   min-height: 40px;
 }
@@ -59,11 +59,11 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid #71836f;
+  border: 1px solid var(--color-control-border);
   border-radius: 7px;
-  background: white;
-  color: #243a30;
-  box-shadow: 0 6px 20px #243a3026;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 6px 20px var(--color-popup-shadow);
 }
 .multi-filter-search {
   padding: 10px;
@@ -72,7 +72,7 @@
 .multi-filter-search input {
   width: 100%;
   min-width: 0;
-  border: 1px solid #71836f;
+  border: 1px solid var(--color-control-border);
   border-radius: 4px;
   padding: 6px 8px;
   font: inherit;
@@ -96,7 +96,7 @@
   border-radius: 3px;
 }
 .multi-offer-options label:hover {
-  background: #f1f5ef;
+  background: var(--color-page);
 }
 .multi-offer-options span {
   overflow-wrap: anywhere;
@@ -105,20 +105,20 @@
 .multi-offer-options input {
   flex-shrink: 0;
   margin-top: 4px;
-  accent-color: #28633c;
+  accent-color: var(--color-primary);
 }
 .multi-filter-clear {
   flex-shrink: 0;
   padding: 9px 12px;
   border: 0;
-  border-top: 1px solid #dbe3d9;
-  background: #f7f9f4;
-  color: #244c31;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface-subtle);
+  color: var(--color-primary);
   text-align: left;
   font-size: 13px;
 }
 .multi-filter-clear:disabled {
-  color: #637160;
+  color: var(--color-disabled);
 }
 .multi-filter-empty {
   margin: 5px;
@@ -141,7 +141,7 @@
   min-width: 0;
   max-width: 100%;
   padding: 6px;
-  border: 1px solid #71836f;
+  border: 1px solid var(--color-control-border);
   border-radius: 5px;
   min-height: 40px;
 }
@@ -152,10 +152,10 @@
   flex-shrink: 0;
   min-height: 34px;
   padding: 6px 12px;
-  border: 1px solid #71836f;
+  border: 1px solid var(--color-action);
   border-radius: 5px;
-  background: #f7f9f4;
-  color: #244c31;
+  background: var(--color-action);
+  color: var(--color-on-action);
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
@@ -170,9 +170,9 @@
   max-height: none;
   max-width: 100%;
   border: 0;
-  background: #fff;
-  color: #20332e;
-  box-shadow: -8px 0 30px #20332e22;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: -8px 0 30px var(--color-drawer-shadow);
   overflow: hidden;
 }
 .offer-filter-drawer[open] {
@@ -180,7 +180,7 @@
   grid-template-rows: auto minmax(0, 1fr) auto;
 }
 .offer-filter-drawer::backdrop {
-  background: #20332e40;
+  background: var(--color-backdrop);
 }
 .offer-filter-drawer-header {
   display: flex;
@@ -188,7 +188,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 20px 24px 16px;
-  border-bottom: 1px solid #dfe5dc;
+  border-bottom: 1px solid var(--color-border);
 }
 .offer-filter-drawer-header h3 {
   font-size: 20px;
@@ -198,7 +198,7 @@
 .offer-filter-drawer-header p {
   margin: 5px 0 0;
   font-size: 12px;
-  color: #4f6353;
+  color: var(--color-text-muted);
 }
 .close-offer-filters {
   width: 32px;
@@ -207,7 +207,7 @@
   border: 0;
   border-radius: 4px;
   background: transparent;
-  color: #315d3d;
+  color: var(--color-primary);
   font-size: 26px;
   line-height: 1;
 }
@@ -226,15 +226,15 @@
   display: block;
   padding: 14px 24px 20px;
   margin: 0;
-  border-top: 1px solid #dfe5dc;
+  border-top: 1px solid var(--color-border);
 }
 .offer-filter-drawer-footer button {
   width: 100%;
   border: 0;
   border-radius: 5px;
   padding: 12px;
-  background: #244c31;
-  color: #fff;
+  background: var(--color-action);
+  color: var(--color-on-action);
   font-size: 14px;
   font-weight: 600;
 }
@@ -244,13 +244,13 @@
   gap: 12px;
   padding: 10px 0;
   margin-bottom: 12px;
-  border-block: 1px solid #dfe5dc;
+  border-block: 1px solid var(--color-border);
 }
 .active-offer-filters-label {
   flex-shrink: 0;
   padding-top: 5px;
   font-size: 12px;
-  color: #4f6353;
+  color: var(--color-text-muted);
 }
 .active-offer-filters ul {
   display: flex;
@@ -273,10 +273,10 @@
   max-width: 100%;
   text-align: left;
   overflow-wrap: anywhere;
-  border: 1px solid #cedccd;
+  border: 1px solid var(--color-border);
   border-radius: 5px;
-  background: #eaf1e9;
-  color: #244c31;
+  background: var(--color-page);
+  color: var(--color-primary);
   padding: 5px 8px;
   font-size: 12px;
 }
@@ -315,4 +315,13 @@
     width: 100%;
     padding: 0;
   }
+}
+
+.open-offer-filters:hover,
+.offer-filter-drawer-footer button:hover {
+  background: var(--color-action-hover);
+  border-color: var(--color-action-hover);
+}
+.multi-filter-clear:not(:disabled):hover {
+  background: var(--color-page);
 }

@@ -1,6 +1,6 @@
 .search-panel {
-  background: #fff;
-  border: 1px solid #dfe5dc;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   margin-bottom: 20px;
   position: sticky;
   top: 0;
@@ -17,54 +17,54 @@
   max-width: 590px;
 }
 .input-group-text {
-  background: #fafbf8;
-  border-color: #d7dfd2;
-  color: #64806e;
+  background: var(--color-surface-subtle);
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
   font-size: 25px;
   line-height: 1;
   padding: 0 14px;
 }
 .form-control {
-  background: #fafbf8;
+  background: var(--color-surface);
   padding: 8px 12px;
   min-height: 40px;
-  border-color: #a5b4a7;
+  border-color: var(--color-control-border);
 }
 .form-control:focus,
 .form-select:focus {
-  border-color: #517961;
-  box-shadow: 0 0 0 0.2rem #174f4319;
-  background: #fff;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.2rem var(--color-focus-shadow);
+  background: var(--color-surface);
 }
 .clear-button {
   /* Свои цвета через переменные Bootstrap: при фокусе .btn возвращает именно их. */
-  --bs-btn-color: #64736a;
-  --bs-btn-bg: #fafbf8;
-  --bs-btn-border-color: #d7dfd2;
+  --bs-btn-color: var(--color-text-muted);
+  --bs-btn-bg: var(--color-surface-subtle);
+  --bs-btn-border-color: var(--color-border);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 12px;
   line-height: 1;
-  border: 1px solid #d7dfd2;
-  background: #fafbf8;
-  color: #64736a;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-subtle);
+  color: var(--color-text-muted);
   font-size: 22px;
 }
 .form-text {
   font-size: 12px;
   margin: 4px 0 0;
-  color: #506354;
+  color: var(--color-text-muted);
 }
 .hint {
   font-size: 13px;
   margin-bottom: 0;
-  color: #506354;
+  color: var(--color-text-muted);
 }
 .example-button {
-  color: #174f43;
+  color: var(--color-primary);
   border: 0;
-  border-bottom: 1px dashed #869b8d;
+  border-bottom: 1px dashed var(--color-border);
   background: transparent;
   padding: 0;
 }
@@ -82,9 +82,11 @@
   min-width: 0;
 }
 .form-select {
+  background-color: var(--color-surface);
+  color: var(--color-text);
   padding: 8px 12px;
   min-height: 40px;
-  border-color: #a5b4a7;
+  border-color: var(--color-control-border);
 }
 .selected-brand {
   overflow-wrap: anywhere;
@@ -106,4 +108,10 @@
   .search-panel {
     padding: 10px;
   }
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  background-color: var(--color-surface-subtle);
+  color: var(--color-text-muted);
 }

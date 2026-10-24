@@ -1,0 +1,31 @@
+/* Palette extracted from favorit-parts.ru/reg/; sources: .scratch/favorit-palette/research.md. */
+:root {
+  --color-primary: #035aa4;
+  --color-action: #0e76d7;
+  --color-action-hover: #035aa4;
+  --color-page: #eff1fa;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f9fbfc;
+  --color-heading: #000000;
+  --color-text: #202f45;
+  --color-text-muted: #3f455b;
+  --color-disabled: #9097a2;
+  --color-border: #cddeed;
+  /* Slightly darkened source gray (#9097A2): 3.03:1 against white. */
+  --color-control-border: #8d95a0;
+  --color-on-action: #ffffff;
+  --color-error: #a40303;
+  --color-error-border: #e66e60;
+  --color-focus-shadow: rgb(3 90 164 / 10%);
+  --color-popup-shadow: rgb(32 47 69 / 15%);
+  --color-drawer-shadow: rgb(32 47 69 / 13%);
+  --color-backdrop: rgb(32 47 69 / 25%);
+  --focus-ring: var(--color-primary);
+  --bs-primary: var(--color-primary);
+  --bs-primary-rgb: 3, 90, 164;
+  --bs-body-color: var(--color-text);
+  --bs-body-bg: var(--color-page);
+  --bs-secondary-color: var(--color-text-muted);
+  --bs-secondary-rgb: 63, 69, 91;
+  --bs-emphasis-color: var(--color-heading);
+}
