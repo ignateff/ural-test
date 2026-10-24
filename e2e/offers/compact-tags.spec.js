@@ -73,7 +73,7 @@ for (const width of [390, 576, 1200]) {
       await expect(page.getByRole("button", { name: "Свернуть", exact: true })).toBeFocused();
       if (process.env.CAPTURE_UI)
         await page.screenshot({
-          path: `.scratch/ui-visual-audit/screenshots/03-tags-${width}-expanded.png`,
+          path: `test-results/screenshots/03-tags-${width}-expanded.png`,
           fullPage: true,
         });
       await page.keyboard.press("Enter");
@@ -89,7 +89,7 @@ for (const width of [390, 576, 1200]) {
     expect(requests()).toBe(initialRequests);
     if (process.env.CAPTURE_UI)
       await page.screenshot({
-        path: `.scratch/ui-visual-audit/screenshots/03-tags-${width}-collapsed.png`,
+        path: `test-results/screenshots/03-tags-${width}-collapsed.png`,
         fullPage: true,
       });
   });
@@ -134,7 +134,7 @@ for (const width of [390, 576, 1200]) {
     );
     if (process.env.CAPTURE_UI)
       await page.screenshot({
-        path: `.scratch/ui-visual-audit/screenshots/03-tags-${width}-mixed-expanded.png`,
+        path: `test-results/screenshots/03-tags-${width}-mixed-expanded.png`,
         fullPage: true,
       });
     await longTag.focus();
@@ -160,7 +160,7 @@ for (const width of [390, 576, 1200]) {
     }
     if (process.env.CAPTURE_UI)
       await page.screenshot({
-        path: `.scratch/ui-visual-audit/screenshots/03-tags-${width}-mixed-collapsed.png`,
+        path: `test-results/screenshots/03-tags-${width}-mixed-collapsed.png`,
         fullPage: true,
       });
     const reset = page.getByRole("button", { name: "Сбросить фильтры", exact: true });

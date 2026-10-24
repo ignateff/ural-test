@@ -1,8 +1,6 @@
 node_modules/
 dist/
 package-lock.json
-.scratch/
-.openai/
-.sites-runtime/
 playwright-report/
 test-results/
+.vite/
