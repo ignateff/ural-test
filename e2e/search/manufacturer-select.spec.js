@@ -31,9 +31,12 @@ for (const viewport of [
       await page.goto("/");
       const select = page.getByRole("combobox", { name: "Производитель искомой детали" });
       const noOverflow = async () => {
-        expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
-          viewport.width,
-        );
+        // Полоса прокрутки может занимать место внутри viewport (Linux CI).
+        expect(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+          ),
+        ).toBe(true);
       };
       await expect(select).toBeDisabled();
       await expect(select).toHaveValue("");

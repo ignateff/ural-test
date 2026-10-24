@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, expect, it, vi } from "vitest";
-import { cleanup, screen, within } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderApp, stubFetch, expectAccessible } from "../support/app-test-helpers";
 const goods = [
@@ -29,9 +29,14 @@ afterEach(() => {
   window.innerWidth = 1024;
 });
 async function open() {
-  const fetch = stubFetch({ goods });
+  // При открытии подбора загружаются предложения и, через 500 мс, производители.
+  const fetch = stubFetch({ goods }, { goods });
   renderApp({ number: "1", brand: "ASAM" });
   await screen.findByRole("button", { name: /^Настроить фильтры/ });
+  await waitFor(() =>
+    expect(screen.getByRole("combobox", { name: "Производитель искомой детали" })).toBeEnabled(),
+  );
+  expect(fetch).toHaveBeenCalledTimes(2);
   return { user: userEvent.setup(), fetch };
 }
 it("открывает панель фильтров по кнопке в шапке результатов и возвращает фокус после закрытия", async () => {
@@ -49,7 +54,7 @@ it("открывает панель фильтров по кнопке в шап
   await user.click(close);
   expect(screen.queryByRole("dialog")).toBeNull();
   expect(trigger).toHaveFocus();
-  expect(fetch).toHaveBeenCalledTimes(1);
+  expect(fetch).toHaveBeenCalledTimes(2);
 });
 it("восстанавливает пять групп из ссылки, удаляет теги снаружи панели и сбрасывает фильтры без смены сортировки", async () => {
   history.replaceState(
@@ -77,7 +82,7 @@ it("восстанавливает пять групп из ссылки, уда
   expect(location.search).toContain("utm=mail");
   expect(location.hash).toBe("#results");
   expect(screen.queryByRole("button", { name: "Сбросить фильтры" })).toBeNull();
-  expect(fetch).toHaveBeenCalledTimes(1);
+  expect(fetch).toHaveBeenCalledTimes(2);
 });
 it("применяет фильтры внутри панели сразу, сохраняет их в URL и показывает теги после возврата к предложениям", async () => {
   window.innerWidth = 390;
@@ -104,7 +109,7 @@ it("применяет фильтры внутри панели сразу, со
   expect(screen.getByRole("button", { name: "Убрать фильтр наличия" })).toBeVisible();
   expect(screen.getByText("Показано 1 из 3")).toBeVisible();
   await expectAccessible();
-  expect(fetch).toHaveBeenCalledTimes(1);
+  expect(fetch).toHaveBeenCalledTimes(2);
 });
 it("сохраняет доступ к сбросу и настройке при пустом результате, снимает блокировку прокрутки после закрытия", async () => {
   history.replaceState(null, "", "/?priceFrom=1000&sort=price&order=asc");
